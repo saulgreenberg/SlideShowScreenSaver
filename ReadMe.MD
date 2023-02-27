@@ -22,3 +22,7 @@ Installation instructions:
 
 4. Right click on SlideShowScreenSaver.scr and choose install.
 5. The Windows screensaver settings panel should appear. Adjust the settings to point to the folder (and sub-folders) containing your jpeg images.
+
+Programming notes.
+- Uses C# and WPF, and built in VS 2022.
+- Thanks to others who provided online examples of how to code a screensaver. I used and modified bits of their code here and there.
