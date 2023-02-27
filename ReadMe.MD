@@ -13,10 +13,13 @@ Shortcuts:
 - Left/Right arrow: pause the slide show and manualy navigate to the previous/next slide
 - Any other key or mouse press: exit the screen saver
 
-To install:
-1. Build the program
+Installation instructions:
+If you just want the executable, download and unzip SlideShowScreenSaver.zip, and start at step 4.
+
+1. Clone and build the program
 2. Go to the bin folder 
 3. Change the exe suffix of the executable:
 -	 SlideShowScreenSaver.exe to SlideShowScreenSaver.scr
+
 4. Right click on SlideShowScreenSaver.scr and choose install.
 5. The Windows screensaver settings panel should appear. Adjust the settings to point to the folder (and sub-folders) containing your jpeg images.
