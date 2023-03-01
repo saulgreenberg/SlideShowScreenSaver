@@ -5,14 +5,18 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
 using Image = System.Windows.Controls.Image;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using Path = System.IO.Path;
 using Point = System.Windows.Point;
 
 namespace SlideShowScreenSaver
@@ -24,7 +28,6 @@ namespace SlideShowScreenSaver
     {
         // So we can access this window directly from other objects
         public static MainWindow MainWindowAccess;
-
 
         // These contain the settings (stored in the registry) that can be adjusted in the Settings dialog 
         // invoked from the Windows screensaver settings
@@ -78,7 +81,7 @@ namespace SlideShowScreenSaver
             this.ImagePathsList = this.LoadImageFolder(this.Settings.PhotoFolder);
             if (this.ImagePathsList.Count == 0)
             {
-                DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
+                this.DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
                 return;
             }
 
@@ -120,7 +123,8 @@ namespace SlideShowScreenSaver
             this.Height = dimensions.Y;
             this.RootCanvas.Width = dimensions.X;
             this.RootCanvas.Height = dimensions.Y;
-            Canvas.SetTop(this.DisplayText, dimensions.Y - this.DisplayText.ActualHeight);
+            Canvas.SetTop(this.DisplayText, dimensions.Y - this.DisplayText.ActualHeight - 20);
+
 
             if (this.ImagePathsList.Count == 0)
             {
@@ -263,7 +267,7 @@ namespace SlideShowScreenSaver
 
                 // Display the image name
                 this.DisplayText.Text = DisplayTextBySettings(this.Settings, newPath);
-
+                //this.DisplayTextOutlined.Text = DisplayTextBySettings(this.Settings, newPath);
                 //  Set the image source to the new image
                 imgNew.Source = newSource;
 
@@ -338,7 +342,6 @@ namespace SlideShowScreenSaver
 
         private static string DisplayTextBySettings(Settings settings, string path)
         {
-            string displayText = string.Empty;
             if (settings.ShowFileName == false)
             {
                 return string.Empty;
