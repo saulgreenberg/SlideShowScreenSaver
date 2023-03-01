@@ -71,6 +71,7 @@
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="TextPath.cs" />
     <Compile Include="UserRegistrySettings.cs" />
     <Page Include="Blackout.xaml">
       <Generator>MSBuild:Compile</Generator>

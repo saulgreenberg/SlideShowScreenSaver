@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using Application = System.Windows.Application;
 using Image = System.Windows.Controls.Image;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using Path = System.IO.Path;
 using Point = System.Windows.Point;
 
 namespace SlideShowScreenSaver
@@ -24,7 +25,6 @@ namespace SlideShowScreenSaver
     {
         // So we can access this window directly from other objects
         public static MainWindow MainWindowAccess;
-
 
         // These contain the settings (stored in the registry) that can be adjusted in the Settings dialog 
         // invoked from the Windows screensaver settings
@@ -78,7 +78,7 @@ namespace SlideShowScreenSaver
             this.ImagePathsList = this.LoadImageFolder(this.Settings.PhotoFolder);
             if (this.ImagePathsList.Count == 0)
             {
-                DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
+                this.DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
                 return;
             }
 
@@ -99,6 +99,7 @@ namespace SlideShowScreenSaver
                 this.RootCanvas.Height = dimensions.Y;
 
                 this.DisplayText.FontSize = 8.0;
+                this.DisplayText.StrokeThickness = 0;
                 Canvas.SetTop(this.DisplayText, 0);
                 Canvas.SetLeft(this.DisplayText, 0);
                 this.Start();
@@ -120,7 +121,7 @@ namespace SlideShowScreenSaver
             this.Height = dimensions.Y;
             this.RootCanvas.Width = dimensions.X;
             this.RootCanvas.Height = dimensions.Y;
-            Canvas.SetTop(this.DisplayText, dimensions.Y - this.DisplayText.ActualHeight);
+            Canvas.SetTop(this.DisplayText, dimensions.Y - this.DisplayText.ActualHeight - 20);
 
             if (this.ImagePathsList.Count == 0)
             {
@@ -140,7 +141,7 @@ namespace SlideShowScreenSaver
                 return new List<string>();
             }
 
-            return Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories)
+            return Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
                 .Where(file => file.EndsWith("jpg", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith("jpeg", StringComparison.InvariantCultureIgnoreCase)).ToList();
 
         }
@@ -263,7 +264,7 @@ namespace SlideShowScreenSaver
 
                 // Display the image name
                 this.DisplayText.Text = DisplayTextBySettings(this.Settings, newPath);
-
+                //this.DisplayTextOutlined.Text = DisplayTextBySettings(this.Settings, newPath);
                 //  Set the image source to the new image
                 imgNew.Source = newSource;
 
@@ -338,7 +339,6 @@ namespace SlideShowScreenSaver
 
         private static string DisplayTextBySettings(Settings settings, string path)
         {
-            string displayText = string.Empty;
             if (settings.ShowFileName == false)
             {
                 return string.Empty;
