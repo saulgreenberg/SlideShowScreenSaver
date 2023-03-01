@@ -50,6 +50,81 @@ namespace SlideShowScreenSaver
             }
         }
 
+        public string ShowFileNameKey = "ShowFileName";
+        public bool ShowFileName
+        {
+            get
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    return registryKey.GetBoolean(ShowFileNameKey,true);
+                }
+            }
+            set
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    registryKey.Write(ShowFileNameKey, value);
+                }
+            }
+        }
+
+        public string DisplayByFileNameKey = "DisplayByFileNameKey";
+        public bool DisplayByFileName
+        {
+            get
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    return registryKey.GetBoolean(DisplayByFileNameKey, true);
+                }
+            }
+            set
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    registryKey.Write(DisplayByFileNameKey, value);
+                }
+            }
+        }
+
+        public string DisplayByFolderFileNameKey = "DisplayByFolderFileNameKey";
+        public bool DisplayByFolderFileName
+        {
+            get
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    return registryKey.GetBoolean(DisplayByFolderFileNameKey, true);
+                }
+            }
+            set
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    registryKey.Write(DisplayByFolderFileNameKey, value);
+                }
+            }
+        }
+
+        public string DisplayByPathKey = "DisplayByPathKey";
+        public bool DisplayByPath
+        {
+            get
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    return registryKey.GetBoolean(DisplayByPathKey, true);
+                }
+            }
+            set
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    registryKey.Write(DisplayByPathKey, value);
+                }
+            }
+        }
         #endregion
 
         #region Constructors

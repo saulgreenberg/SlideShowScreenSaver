@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace SlideShowScreenSaver
@@ -16,6 +17,21 @@ namespace SlideShowScreenSaver
             this.Settings = settings;
             this.SliderTiming.Value = this.Settings.Timing;
             this.TextBlockCurrentPath.Text = this.Settings.PhotoFolder;
+
+            this.CBShowFileName.IsChecked = this.Settings.ShowFileName;
+            this.CBShowFileName.Checked += CBShowFileName_CheckChanged;
+            this.CBShowFileName.Unchecked += CBShowFileName_CheckChanged;
+             
+            this.RBFile.IsChecked = this.Settings.DisplayByFileName;
+            this.RBFile.Checked += this.RBFileNaming_CheckChanged;
+
+            this.RBFolderFile.IsChecked = this.Settings.DisplayByFolderFileName;
+            this.RBFolderFile.Checked += this.RBFileNaming_CheckChanged;
+
+            this.RBPath.IsChecked = this.Settings.DisplayByPath;
+            this.RBPath.Checked += this.RBFileNaming_CheckChanged;
+
+            this.SetRBVisibility(this.CBShowFileName.IsChecked == true);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -72,6 +88,45 @@ namespace SlideShowScreenSaver
                 }
                 return false;
             }
+        }
+
+
+        private void CBShowFileName_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            this.Settings.ShowFileName = this.CBShowFileName.IsChecked == true;
+            this.SetRBVisibility(this.CBShowFileName.IsChecked == true);
+        }
+
+        private void RBFileNaming_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton rb)
+            {
+                switch (rb.Name)
+                {
+                    case "RBFile":
+                        this.Settings.DisplayByFileName = true;
+                        this.Settings.DisplayByFolderFileName = false;
+                        this.Settings.DisplayByPath = false;
+                        break;
+                    case "RBFolderFile":
+                        this.Settings.DisplayByFileName = false;
+                        this.Settings.DisplayByFolderFileName = true;
+                        this.Settings.DisplayByPath = false;
+                        break;
+                    case "RBPath":
+                        this.Settings.DisplayByFileName = false;
+                        this.Settings.DisplayByFolderFileName = false;
+                        this.Settings.DisplayByPath = true;
+                        break;
+                }
+            }
+        }
+
+        private void SetRBVisibility(bool enabled)
+        {
+            this.RBFile.IsEnabled = enabled;
+            this.RBFolderFile.IsEnabled = enabled;
+            this.RBPath.IsEnabled = enabled;
         }
     }
 }

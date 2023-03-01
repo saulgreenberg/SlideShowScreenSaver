@@ -262,7 +262,7 @@ namespace SlideShowScreenSaver
                 }
 
                 // Display the image name
-                this.DisplayText.Text = Path.GetFileName(newPath);
+                this.DisplayText.Text = DisplayTextBySettings(this.Settings, newPath);
 
                 //  Set the image source to the new image
                 imgNew.Source = newSource;
@@ -334,6 +334,30 @@ namespace SlideShowScreenSaver
                 src.Freeze();
                 return src;
             }
+        }
+
+        private static string DisplayTextBySettings(Settings settings, string path)
+        {
+            string displayText = string.Empty;
+            if (settings.ShowFileName == false)
+            {
+                return string.Empty;
+            }
+
+            if (settings.DisplayByFileName)
+            {
+                return Path.GetFileName(path);
+            }
+
+            else if (settings.DisplayByFolderFileName)
+            {
+                string fullPath = Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar);
+                string lastFolder = fullPath.Split(Path.DirectorySeparatorChar).Last();
+
+                return Path.Combine(lastFolder, Path.GetFileName(path));
+            }
+            // must be settings.DisplayByPath 
+            return path;
         }
         #endregion
     }
