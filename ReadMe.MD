@@ -7,6 +7,7 @@ SlideShowScreenSaver:
 - Settings options includes:
    - choose the folder containg your desired images (default is your Pictures folder)
    - choose the timing of switching between photos
+   - whether or not to show the image file name, and if so whether some or all of the path should be included.
 
 Shortcuts:
 - Spacebar: pause / resume the slide show
