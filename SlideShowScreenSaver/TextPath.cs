@@ -1,17 +1,12 @@
-﻿
-
-using System;
+﻿using System;
 using System.ComponentModel;
-using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using static System.Net.Mime.MediaTypeNames;
 
-// This code from https://www.codeproject.com/script/Articles/ViewDownloads.aspx?aid=1106695, Clifford Nelson WPF Text Outline Font
+// This code is originally from https://www.codeproject.com/script/Articles/ViewDownloads.aspx?aid=1106695, Clifford Nelson, WPF Text Outline Font
 
 namespace SlideShowScreenSaver
 {
@@ -33,8 +28,8 @@ namespace SlideShowScreenSaver
         [TypeConverter(typeof(FontFamilyConverter))]
         public FontFamily FontFamily
         {
-            get { return (FontFamily)GetValue(FontFamilyProperty); }
-            set { SetValue(FontFamilyProperty, value); }
+            get => (FontFamily)GetValue(FontFamilyProperty);
+            set => SetValue(FontFamilyProperty, value);
         }
 
         public static readonly DependencyProperty FontSizeProperty = TextElement.FontSizeProperty.AddOwner(
@@ -48,8 +43,8 @@ namespace SlideShowScreenSaver
         [Localizability(LocalizationCategory.None)]
         public double FontSize
         {
-            get { return (double)GetValue(FontSizeProperty); }
-            set { SetValue(FontSizeProperty, value); }
+            get => (double)GetValue(FontSizeProperty);
+            set => SetValue(FontSizeProperty, value);
         }
 
         public static readonly DependencyProperty FontStretchProperty = TextElement.FontStretchProperty.AddOwner(
@@ -63,8 +58,8 @@ namespace SlideShowScreenSaver
         [TypeConverter(typeof(FontStretchConverter))]
         public FontStretch FontStretch
         {
-            get { return (FontStretch)GetValue(FontStretchProperty); }
-            set { SetValue(FontStretchProperty, value); }
+            get => (FontStretch)GetValue(FontStretchProperty);
+            set => SetValue(FontStretchProperty, value);
         }
 
         public static readonly DependencyProperty FontStyleProperty = TextElement.FontStyleProperty.AddOwner(
@@ -78,8 +73,8 @@ namespace SlideShowScreenSaver
         [TypeConverter(typeof(FontStyleConverter))]
         public FontStyle FontStyle
         {
-            get { return (FontStyle)GetValue(FontStyleProperty); }
-            set { SetValue(FontStyleProperty, value); }
+            get => (FontStyle)GetValue(FontStyleProperty);
+            set => SetValue(FontStyleProperty, value);
         }
 
         public static readonly DependencyProperty FontWeightProperty = TextElement.FontWeightProperty.AddOwner(
@@ -93,12 +88,12 @@ namespace SlideShowScreenSaver
         [TypeConverter(typeof(FontWeightConverter))]
         public FontWeight FontWeight
         {
-            get { return (FontWeight)GetValue(FontWeightProperty); }
-            set { SetValue(FontWeightProperty, value); }
+            get => (FontWeight)GetValue(FontWeightProperty);
+            set => SetValue(FontWeightProperty, value);
         }
 
         public static readonly DependencyProperty OriginPointProperty =
-            DependencyProperty.Register("Origin", typeof(Point), typeof(TextPath),
+            DependencyProperty.Register(nameof(Origin), typeof(Point), typeof(TextPath),
                 new FrameworkPropertyMetadata(new Point(0, 0),
                     FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsMeasure,
                     OnPropertyChanged));
@@ -107,12 +102,12 @@ namespace SlideShowScreenSaver
         [TypeConverter(typeof(PointConverter))]
         public Point Origin
         {
-            get { return (Point)GetValue(OriginPointProperty); }
-            set { SetValue(OriginPointProperty, value); }
+            get => (Point)GetValue(OriginPointProperty);
+            set => SetValue(OriginPointProperty, value);
         }
 
         public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register("Text", typeof(string), typeof(TextPath),
+            DependencyProperty.Register(nameof(Text), typeof(string), typeof(TextPath),
                 new FrameworkPropertyMetadata(string.Empty,
                     FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsMeasure,
                     OnPropertyChanged));
@@ -120,8 +115,8 @@ namespace SlideShowScreenSaver
         [Bindable(true), Category("Appearance")]
         public string Text
         {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
 
         #endregion
@@ -145,9 +140,13 @@ namespace SlideShowScreenSaver
         protected override Size MeasureOverride(Size availableSize)
         {
             if (_textGeometry == null) CreateTextGeometry();
-            if (_textGeometry.Bounds == Rect.Empty)
+            if (_textGeometry?.Bounds == Rect.Empty)
+            {
                 return new Size(0, 0);
+            }
+
             // return the desired size
+            // ReSharper disable once PossibleNullReferenceException
             return new Size(Math.Min(availableSize.Width, _textGeometry.Bounds.Width),
                 Math.Min(availableSize.Height, _textGeometry.Bounds.Height));
         }

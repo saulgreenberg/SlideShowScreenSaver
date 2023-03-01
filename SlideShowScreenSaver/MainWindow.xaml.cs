@@ -5,13 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
 using Image = System.Windows.Controls.Image;
@@ -102,6 +99,7 @@ namespace SlideShowScreenSaver
                 this.RootCanvas.Height = dimensions.Y;
 
                 this.DisplayText.FontSize = 8.0;
+                this.DisplayText.StrokeThickness = 0;
                 Canvas.SetTop(this.DisplayText, 0);
                 Canvas.SetLeft(this.DisplayText, 0);
                 this.Start();
@@ -125,7 +123,6 @@ namespace SlideShowScreenSaver
             this.RootCanvas.Height = dimensions.Y;
             Canvas.SetTop(this.DisplayText, dimensions.Y - this.DisplayText.ActualHeight - 20);
 
-
             if (this.ImagePathsList.Count == 0)
             {
                 this.Stop();
@@ -144,7 +141,7 @@ namespace SlideShowScreenSaver
                 return new List<string>();
             }
 
-            return Directory.EnumerateFiles(path, "*.*", System.IO.SearchOption.AllDirectories)
+            return Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
                 .Where(file => file.EndsWith("jpg", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith("jpeg", StringComparison.InvariantCultureIgnoreCase)).ToList();
 
         }

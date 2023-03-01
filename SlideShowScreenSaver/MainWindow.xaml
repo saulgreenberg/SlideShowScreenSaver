@@ -45,20 +45,17 @@
             </Image.RenderTransform>
         </Image>
 
-        <!--<TextBlock TextWrapping="Wrap" x:Name="DisplayText" Canvas.ZIndex="1" Canvas.Left="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Visibility="Visible" 
-                       Text="Text goes here" FontSize="30" Foreground="LightSalmon">
-        </TextBlock>-->
-
+        <!-- Text graphics that uses an outline font-->
+        <!--We could specify the font if we wanted to: FontFamily="SegoeUI"-->
         <local:TextPath x:Name="DisplayText" Margin="10,0,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
-                        Fill="WhiteSmoke"
+                        Fill="Gold"
                         Stroke="Black"
                         StrokeThickness="1.5"
-                        FontFamily="Ariel"
-                        FontSize="28"
+                        FontFamily="SegoeUI"
+                        FontSize="26"
                         FontWeight="Bold"
                         Text="This is a Test of Outline Text" />
     </Canvas>
-
 </Window>
