@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -14,7 +12,6 @@ using Application = System.Windows.Application;
 using Image = System.Windows.Controls.Image;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using Path = System.IO.Path;
-using Point = System.Windows.Point;
 
 namespace SlideShowScreenSaver
 {
@@ -42,7 +39,7 @@ namespace SlideShowScreenSaver
         private readonly string TransitionType;
 
         // The top level photo folder, and a list of all image paths in that folder
-        private readonly List<string> ImagePathsList;
+        private readonly IEnumerable<string> ImagePathsList;
 
         // A first-in list of previously seen photos
         private readonly List<string> HistoryList = new List<string>();
@@ -74,7 +71,7 @@ namespace SlideShowScreenSaver
 
             // Load all images into the ImagePaths List
             this.ImagePathsList = this.LoadImageFolder(this.Settings.PhotoFolder);
-            if (this.ImagePathsList.Count == 0)
+            if (!this.ImagePathsList.Any())
             {
                 this.DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
                 return;
@@ -111,7 +108,7 @@ namespace SlideShowScreenSaver
         {
             // This is NOT invoked in preview mode
             // If there are no folders, then don't start the timer
-            if (this.ImagePathsList.Count == 0)
+            if (!this.ImagePathsList.Any())
             {
                 this.Stop();
             }
@@ -121,7 +118,7 @@ namespace SlideShowScreenSaver
             }
         }
 
-        private List<string> LoadImageFolder(string path)
+        private IEnumerable<string> LoadImageFolder(string path)
         {
             if (!Directory.Exists(path))
             {
@@ -131,7 +128,7 @@ namespace SlideShowScreenSaver
 
             // Get all the image paths as a list from the specified folder and its subfolders
             return Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
-                .Where(file => file.EndsWith("jpg", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith("jpeg", StringComparison.InvariantCultureIgnoreCase)).ToList();
+                .Where(file => file.EndsWith("jpg", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith("jpeg", StringComparison.InvariantCultureIgnoreCase));
         }
 
         #region Slide sow playing: Start/Stop/IsPlaying/TogglePlay
@@ -216,7 +213,7 @@ namespace SlideShowScreenSaver
                         this.HistoryIndex--;
                     }
                 }
-               
+
                 if (fromHistoryList && this.HistoryIndex < historyListCount ) 
                 {
                     if (this.HistoryIndex < 0 || this.HistoryIndex >= historyListCount )
@@ -232,8 +229,8 @@ namespace SlideShowScreenSaver
                 else
                 {
                     // Get a random image path to display
-                    newPath = this.ImagePathsList[Random.Next(0, this.ImagePathsList.Count)];
-                    newSource = CreateImageSource(newPath, false);
+                    newPath = this.ImagePathsList.ElementAt(Random.Next(0, this.ImagePathsList.Count()));
+                    newSource = CreateImageSource(newPath, true);
 
                     // Add the path to the history list
                     this.HistoryList.Add(newPath);
@@ -314,7 +311,6 @@ namespace SlideShowScreenSaver
         // catching the DownloadFailed event. See https://www.codeproject.com/Questions/785061/How-do-I-determine-an-Bitmapimage-loaded-successfu for how to do this.
         private static ImageSource CreateImageSource(string file, bool forcePreLoad)
         {
-            
             if (forcePreLoad)
             {
                 var src = new BitmapImage();

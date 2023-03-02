@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Forms;
-using Point = System.Windows.Point;
 
 namespace SlideShowScreenSaver
 {
@@ -71,14 +70,6 @@ namespace SlideShowScreenSaver
 				SettingsDialog dialog = new SettingsDialog(settings);
 				dialog.ShowDialog(); // We don't bother with a result, as settings are changed dynamically.
             }
-        }
-
-        public static Point RealPixelsToWpf(Window w, Point p)
-        {
-            PresentationSource ps = PresentationSource.FromVisual(w);
-            return (ps?.CompositionTarget != null)
-            ? ps.CompositionTarget.TransformFromDevice.Transform(p)
-            : new Point(3840, 2088);
         }
     }
 }

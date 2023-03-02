@@ -27,23 +27,29 @@
         </Storyboard>
     </Window.Resources>
 
-    <Grid Name="RootContainer" Background="Black" ClipToBounds="True">
+    <Grid Name="RootContainer" Background="Black" ClipToBounds="True" ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Image x:Name="Image1" Stretch="Uniform"  Width="{Binding Path=ActualWidth, ElementName=RootContainer}" Height="{Binding Path=ActualHeight, ElementName=RootContainer}"  RenderTransformOrigin="0.5,0.5" >
-            <Image.RenderTransform>
-                <TransformGroup>
-                    <TranslateTransform X="0" Y="0">
-                    </TranslateTransform>
-                </TransformGroup>
-            </Image.RenderTransform>
-        </Image>
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform X="0" Y="0">
+                        </TranslateTransform>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
         <Image x:Name="Image2" Stretch="Uniform"  Width="{Binding Path=ActualWidth, ElementName=RootContainer}" Height="{Binding Path=ActualHeight, ElementName=RootContainer}"  RenderTransformOrigin="0.5,0.5" >
-            <Image.RenderTransform>
-                <TransformGroup>
-                    <TranslateTransform X="0" Y="0">
-                    </TranslateTransform>
-                </TransformGroup>
-            </Image.RenderTransform>
-        </Image>
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform X="0" Y="0">
+                        </TranslateTransform>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
 
         <!-- Text graphics that uses an outline font. -->
         <!-- We embed this in a label just to make its autosizing easier, but that may not be needed-->
