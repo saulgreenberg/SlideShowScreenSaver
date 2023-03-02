@@ -34,7 +34,7 @@ namespace SlideShowScreenSaver
 					}
 					else
 					{
-						MainWindow window = new MainWindow(settings, false, new Point(0,0));
+						MainWindow window = new MainWindow(settings, false);
                         App.PrimaryScreen = s;
                         window.Show();
                     }
@@ -60,11 +60,11 @@ namespace SlideShowScreenSaver
                 };
 
                 winWPFContent = new HwndSource(sourceParams);
-                MainWindow window = new MainWindow(settings, true, new Point(sourceParams.Width, sourceParams.Height));
+                MainWindow window = new MainWindow(settings, true);
 
 
                 winWPFContent.Disposed += (o, args) => window.Close();
-                winWPFContent.RootVisual = window.RootCanvas;
+                winWPFContent.RootVisual = window.RootContainer;
             } 
             else if (e.Args[0].ToLower().StartsWith("/c"))
             {

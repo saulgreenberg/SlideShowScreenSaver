@@ -56,11 +56,11 @@ namespace SlideShowScreenSaver
         // Used to generate and select a random image from ImagePathsList 
         private readonly Random Random = new Random();
 
-        public MainWindow(Settings settings, bool previewing, Point windowSize)
+        public MainWindow(Settings settings, bool previewing)
         {
             InitializeComponent();
             // This is a hack, as I can't figure out how to convert the size of the preview window into WPF coordinates
-            double pixelsToWpfRatio = .5;
+            //double pixelsToWpfRatio = .5;
             this.Settings = settings;
 
             // So we can access  this window from other objects
@@ -91,44 +91,25 @@ namespace SlideShowScreenSaver
             {
                 // We are in a preview mode.
                 // A screen saver preview is drawn in the small rectangle in the windows screen saver settings dialog
-                // Consequently, we need to adjust the canvas size and the position / font size of the display text to better fit the preview window
-                // Note that this is a bit problematic, as so far I can't figure out how to get the size of that rectangle in WPF coordinates.
-                // Instead, I just multiply it by a fixed ratio, which sort of works but is not quite sized correctly as that depends on the screen dpi.
-                Point dimensions = new Point(windowSize.X * pixelsToWpfRatio, windowSize.X * pixelsToWpfRatio);
-                this.RootCanvas.Width = dimensions.X;
-                this.RootCanvas.Height = dimensions.Y;
-
+                // Autosizing of images seems to work as long as its in a grid. 
+                // However, we should scale the font size to fit
                 this.DisplayText.FontSize = 8.0;
                 this.DisplayText.StrokeThickness = 0;
-
-                Canvas.SetTop(this.DisplayText, 0);
-                Canvas.SetLeft(this.DisplayText, 0);
                 this.Start();
+                // Note that the Loaded callback is not invoked in Preview mode
             }
             else
             {
                 // Set the outline font to the stored settings.
                 this.DisplayText.FontSize = this.Settings.DisplayFontSize;
                 this.DisplayText.StrokeThickness = this.DisplayText.FontSize/26.0;
+                // The slide show will be started via the Loaded callback
             }
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // This is NOT invoked in preview mode
-
-            // Top left corner
-            this.Left = App.PrimaryScreen.WorkingArea.Left;
-            this.Top = App.PrimaryScreen.WorkingArea.Top;
-
-            // Fit the window and canvas to the screen
-            Point dimensions = App.RealPixelsToWpf(this, new Point(App.PrimaryScreen.WorkingArea.Width, App.PrimaryScreen.WorkingArea.Height));
-            this.Width = dimensions.X;
-            this.Height = dimensions.Y;
-            this.RootCanvas.Width = dimensions.X;
-            this.RootCanvas.Height = dimensions.Y;
-            Canvas.SetTop(this.DisplayText, dimensions.Y - this.DisplayText.ActualHeight - 20);
-
             // If there are no folders, then don't start the timer
             if (this.ImagePathsList.Count == 0)
             {
