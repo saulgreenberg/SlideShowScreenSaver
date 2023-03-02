@@ -27,13 +27,9 @@
         </Storyboard>
     </Window.Resources>
 
-    <Grid Name="RootContainer" Background="Black" ClipToBounds="True" ShowGridLines="True">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid Name="RootContainer" Background="Black" >
+
+        <!--The two images that will hold the slides as they are generated, where animation occurs between them -->
         <Image x:Name="Image1" Stretch="Uniform"  Width="{Binding Path=ActualWidth, ElementName=RootContainer}" Height="{Binding Path=ActualHeight, ElementName=RootContainer}"  RenderTransformOrigin="0.5,0.5" >
                 <Image.RenderTransform>
                     <TransformGroup>
@@ -42,6 +38,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
+
         <Image x:Name="Image2" Stretch="Uniform"  Width="{Binding Path=ActualWidth, ElementName=RootContainer}" Height="{Binding Path=ActualHeight, ElementName=RootContainer}"  RenderTransformOrigin="0.5,0.5" >
                 <Image.RenderTransform>
                     <TransformGroup>
@@ -53,10 +50,11 @@
 
         <!-- Text graphics that uses an outline font. -->
         <!-- We embed this in a label just to make its autosizing easier, but that may not be needed-->
-        <!--We could specify the font if we wanted to: FontFamily="SegoeUI"-->
+        <!-- We also specify the font to use: FontFamily="SegoeUI"-->
         <Label VerticalAlignment="Bottom">
             <local:TextPath x:Name="DisplayText" Margin="10,0,0,5"
                         HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
                         Fill="Gold"
                         Stroke="Black"
                         StrokeThickness="1"

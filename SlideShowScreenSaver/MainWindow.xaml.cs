@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -89,11 +90,13 @@ namespace SlideShowScreenSaver
                 // We are in a preview mode.
                 // A screen saver preview is drawn in the small rectangle in the windows screen saver settings dialog
                 // Autosizing of images seems to work as long as its in a grid. 
-                // However, we should scale the font size to fit
+                // However, we should scale the font size to fit, and remove any margins from that text
                 this.DisplayText.FontSize = 8.0;
-                this.DisplayText.StrokeThickness = 0;
-                this.Start();
-                // Note that the Loaded callback is not invoked in Preview mode
+                this.DisplayText.StrokeThickness = .2;
+                this.DisplayText.Margin = new Thickness(0);
+
+                this.MainWindow_Loaded(null, null);
+                // Note that the Loaded callback is not automatically invoked in Preview mode
             }
             else
             {
