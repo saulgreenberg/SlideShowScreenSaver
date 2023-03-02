@@ -63,8 +63,6 @@ namespace SlideShowScreenSaver
             }
         }
         
-        
-
         private void ButtonSelectFolder_OnClick(object sender, RoutedEventArgs e)
         {
             if (TryGetFolderFromUserUsingOpenFileDialog("Select a folder with photos in it", this.Settings.PhotoFolder,
@@ -76,10 +74,8 @@ namespace SlideShowScreenSaver
             }
         }
 
-        /// <summary>
-        /// Prompt the user for a folder location via an an open file dialog. 
-        /// </summary>
-        /// <returns>The selected path, otherwise null </returns>
+        // Prompt the user for a folder location via an an open file dialog. 
+        // returns true/false. If true returns the selected path
         public static bool TryGetFolderFromUserUsingOpenFileDialog(string title, string initialFolder, out string selectedFolderPath)
         {
             selectedFolderPath = string.Empty;

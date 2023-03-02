@@ -6,10 +6,15 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-// This code is originally from https://www.codeproject.com/script/Articles/ViewDownloads.aspx?aid=1106695, Clifford Nelson, WPF Text Outline Font
+// This code is very slightly modified from the WPF Text Outline Font class by Clifford Nelson, found at https://www.codeproject.com/script/Articles/ViewDownloads.aspx?aid=1106695
+// Its not absolutely necessary for this screensaver. However, it does provide and outline text font that is more readable when placed above an image.
+// If you don't want to use it, just replace the TextPath object in MainWindow.xaml with a TextBlock or equivalent
+// and comments out the line in MainWindow.cs that specifies the StrokeThickness
 
 namespace SlideShowScreenSaver
 {
+    // This class creates an outlined text font as a replacement for other text objects, such as a text block
+
     public class TextPath : Shape
     {
         private Geometry _textGeometry;

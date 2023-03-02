@@ -26,14 +26,12 @@ namespace SlideShowScreenSaver
         // So we can access this window directly from other objects
         public static MainWindow MainWindowAccess;
 
-        // These contain the settings (stored in the registry) that can be adjusted in the Settings dialog 
-        // invoked from the Windows screensaver settings
+        // These contain the settings (stored in the registry) along with defaults that can be adjusted in the Settings dialog 
+        // invoked from the Windows screensaver settings.
         public readonly Settings Settings;
 
-        
         // The timer that operates the slide show
         private readonly DispatcherTimer Timer;
-        // private readonly int TimerInterval = 2;
 
         // Transition effects
         // This eventually allows for more transition effects to be added
@@ -91,21 +89,25 @@ namespace SlideShowScreenSaver
 
             if (previewing)
             {
-                // If we are in a preview mode, which appears in the windows setting, adjust the canvas size and 
-                // the position of the display text to better fit the preview window
+                // We are in a preview mode.
+                // A screen saver preview is drawn in the small rectangle in the windows screen saver settings dialog
+                // Consequently, we need to adjust the canvas size and the position / font size of the display text to better fit the preview window
+                // Note that this is a bit problematic, as so far I can't figure out how to get the size of that rectangle in WPF coordinates.
+                // Instead, I just multiply it by a fixed ratio, which sort of works but is not quite sized correctly as that depends on the screen dpi.
                 Point dimensions = new Point(windowSize.X * pixelsToWpfRatio, windowSize.X * pixelsToWpfRatio);
                 this.RootCanvas.Width = dimensions.X;
                 this.RootCanvas.Height = dimensions.Y;
 
                 this.DisplayText.FontSize = 8.0;
                 this.DisplayText.StrokeThickness = 0;
+
                 Canvas.SetTop(this.DisplayText, 0);
                 Canvas.SetLeft(this.DisplayText, 0);
                 this.Start();
             }
             else
             {
-                // Set the outline font to th estored settings.
+                // Set the outline font to the stored settings.
                 this.DisplayText.FontSize = this.Settings.DisplayFontSize;
                 this.DisplayText.StrokeThickness = this.DisplayText.FontSize/26.0;
             }
@@ -119,8 +121,7 @@ namespace SlideShowScreenSaver
             this.Left = App.PrimaryScreen.WorkingArea.Left;
             this.Top = App.PrimaryScreen.WorkingArea.Top;
 
-
-            // Fill the window and canvas to the screen
+            // Fit the window and canvas to the screen
             Point dimensions = App.RealPixelsToWpf(this, new Point(App.PrimaryScreen.WorkingArea.Width, App.PrimaryScreen.WorkingArea.Height));
             this.Width = dimensions.X;
             this.Height = dimensions.Y;
@@ -128,6 +129,7 @@ namespace SlideShowScreenSaver
             this.RootCanvas.Height = dimensions.Y;
             Canvas.SetTop(this.DisplayText, dimensions.Y - this.DisplayText.ActualHeight - 20);
 
+            // If there are no folders, then don't start the timer
             if (this.ImagePathsList.Count == 0)
             {
                 this.Stop();
@@ -146,12 +148,17 @@ namespace SlideShowScreenSaver
                 return new List<string>();
             }
 
+            // Get all the image paths as a list from the specified folder and its subfolders
             return Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
                 .Where(file => file.EndsWith("jpg", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith("jpeg", StringComparison.InvariantCultureIgnoreCase)).ToList();
-
         }
 
-        #region Start/Stop/Play/TogglePlay
+        #region Slide sow playing: Start/Stop/IsPlaying/TogglePlay
+        private bool IsPlaying()
+        {
+            return this.Timer?.IsEnabled == true;
+        }
+        
         private void Start()
         {
             this.ShowSlide();
@@ -164,11 +171,6 @@ namespace SlideShowScreenSaver
             {
                 this.Timer.Stop();
             }
-        }
-
-        private bool IsPlaying()
-        {
-            return this.Timer?.IsEnabled == true;
         }
 
         private void TogglePlay()
@@ -292,27 +294,32 @@ namespace SlideShowScreenSaver
             this.ShowSlide();
         }
 
+        // Exit the screen saver on any mouse down press
         public void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
+        // React to 
         public void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
+                
                 case Key.Space:
+                    // Pause or resume the slide show
                     this.TogglePlay();
                     break;
                 case Key.Left:
-                    //this.PreviousSlide();
+                    // Go to the previous slide
                     this.Navigate(DirectionEnum.Previous);
                     break;
                 case Key.Right:
-                    //this.NextSlide();
+                    // Go to the next slide
                     this.Navigate(DirectionEnum.Next);
                     break;
                 default:
+                    // Exit the screen saver on any other key press
                     Application.Current.Shutdown();
                     break;
             }
@@ -320,8 +327,13 @@ namespace SlideShowScreenSaver
         #endregion
 
         #region Utilities
+        // Given a file, return an image source 
+        // Note that this assumes the file exists and is a valid image.
+        // We could put in some error checking, e.g. by checking the file existence, and by
+        // catching the DownloadFailed event. See https://www.codeproject.com/Questions/785061/How-do-I-determine-an-Bitmapimage-loaded-successfu for how to do this.
         private static ImageSource CreateImageSource(string file, bool forcePreLoad)
         {
+            
             if (forcePreLoad)
             {
                 var src = new BitmapImage();
@@ -340,6 +352,8 @@ namespace SlideShowScreenSaver
             }
         }
 
+        // Return a string representing the file name,
+        // formatted according to the current user settings.
         private static string DisplayTextBySettings(Settings settings, string path)
         {
             if (settings.ShowFileName == false)
