@@ -125,6 +125,25 @@ namespace SlideShowScreenSaver
                 }
             }
         }
+
+        public string DisplayFontSizeKey = "DisplayFontSize";
+        public int DisplayFontSize
+        {
+            get
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    return registryKey.GetInteger(DisplayFontSizeKey, 26);
+                }
+            }
+            set
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    registryKey.Write(DisplayFontSizeKey, value);
+                }
+            }
+        }
         #endregion
 
         #region Constructors

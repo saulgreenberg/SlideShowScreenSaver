@@ -85,8 +85,7 @@ namespace SlideShowScreenSaver
             // Set up the slide show timer
             this.Timer = new DispatcherTimer
             {
-                // Interval = new TimeSpan(0, 0, TimerInterval)
-                Interval = new TimeSpan(0, 0, settings.Timing)
+                Interval = new TimeSpan(0, 0, this.Settings.Timing)
             };
             this.Timer.Tick += TimerTick;
 
@@ -103,6 +102,12 @@ namespace SlideShowScreenSaver
                 Canvas.SetTop(this.DisplayText, 0);
                 Canvas.SetLeft(this.DisplayText, 0);
                 this.Start();
+            }
+            else
+            {
+                // Set the outline font to th estored settings.
+                this.DisplayText.FontSize = this.Settings.DisplayFontSize;
+                this.DisplayText.StrokeThickness = this.DisplayText.FontSize/26.0;
             }
         }
 
@@ -207,8 +212,6 @@ namespace SlideShowScreenSaver
 
                 ImageSource newSource;
                 string newPath;
-                Debug.Print(this.HistoryIndex + "|" + historyListCount);
-
 
                 if (fromHistoryList && direction == DirectionEnum.Next)
                 {

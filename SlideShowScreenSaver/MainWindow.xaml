@@ -52,7 +52,7 @@
                         VerticalAlignment="Top"
                         Fill="Gold"
                         Stroke="Black"
-                        StrokeThickness="1.5"
+                        StrokeThickness="1"
                         FontFamily="SegoeUI"
                         FontSize="26"
                         FontWeight="Bold"

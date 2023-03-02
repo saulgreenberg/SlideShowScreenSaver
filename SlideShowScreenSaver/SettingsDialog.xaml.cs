@@ -14,8 +14,10 @@ namespace SlideShowScreenSaver
         public SettingsDialog(Settings settings)
         {
             InitializeComponent();
+            // Initialize the settings from the values in the registry
             this.Settings = settings;
             this.SliderTiming.Value = this.Settings.Timing;
+            this.SliderDisplayFontSize.Value = this.Settings.DisplayFontSize;
             this.TextBlockCurrentPath.Text = this.Settings.PhotoFolder;
 
             this.CBShowFileName.IsChecked = this.Settings.ShowFileName;
@@ -37,6 +39,7 @@ namespace SlideShowScreenSaver
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SliderTiming.ValueChanged += SliderTiming_ValueChanged;
+            SliderDisplayFontSize.ValueChanged += SliderDisplayFontSize_ValueChanged;
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
@@ -51,6 +54,16 @@ namespace SlideShowScreenSaver
                 this.Settings.Timing = Convert.ToInt32(e.NewValue);
             }
         }
+
+        private void SliderDisplayFontSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (this.Settings != null)
+            {
+                this.Settings.DisplayFontSize = Convert.ToInt32(e.NewValue);
+            }
+        }
+        
+        
 
         private void ButtonSelectFolder_OnClick(object sender, RoutedEventArgs e)
         {
