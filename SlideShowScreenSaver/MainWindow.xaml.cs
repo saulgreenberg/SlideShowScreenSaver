@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -249,8 +248,8 @@ namespace SlideShowScreenSaver
                 }
 
                 // Display the image name
-                this.DisplayText.Text = DisplayTextBySettings(this.Settings, newPath);
-                //this.DisplayTextOutlined.Text = DisplayTextBySettings(this.Settings, newPath);
+                this.DisplayText.Text = DisplayTextBasedOnSettings(this.Settings, newPath);
+
                 //  Set the image source to the new image
                 imgNew.Source = newSource;
 
@@ -334,7 +333,7 @@ namespace SlideShowScreenSaver
 
         // Return a string representing the file name,
         // formatted according to the current user settings.
-        private static string DisplayTextBySettings(Settings settings, string path)
+        private static string DisplayTextBasedOnSettings(Settings settings, string path)
         {
             if (settings.ShowFileName == false)
             {
@@ -346,14 +345,24 @@ namespace SlideShowScreenSaver
                 return Path.GetFileName(path);
             }
 
-            else if (settings.DisplayByFolderFileName)
+            if (settings.DisplayByFolderName)
             {
-                string fullPath = Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar);
-                string lastFolder = fullPath.Split(Path.DirectorySeparatorChar).Last();
+                string foldername = Path.GetFileName(Path.GetDirectoryName(path));
+                string filename = Path.GetFileName(path);
 
-                return Path.Combine(lastFolder, Path.GetFileName(path));
+                return foldername ?? filename;
             }
-            // must be settings.DisplayByPath 
+
+            if (settings.DisplayByFolderFileName)
+            {
+                string foldername = Path.GetFileName(Path.GetDirectoryName(path));
+                string filename = Path.GetFileName(path);
+                
+                return foldername == null 
+                    ? filename 
+                    : Path.Combine(foldername, filename);
+            }
+            // Only other possibilitys is settings.DisplayByPath 
             return path;
         }
         #endregion

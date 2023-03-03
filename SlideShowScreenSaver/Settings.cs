@@ -88,6 +88,25 @@ namespace SlideShowScreenSaver
             }
         }
 
+        public string DisplayByFolderNameKey = "DisplayByFolderNameKey";
+        public bool DisplayByFolderName
+        {
+            get
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    return registryKey.GetBoolean(DisplayByFolderNameKey, true);
+                }
+            }
+            set
+            {
+                using (RegistryKey registryKey = this.OpenRegistryKey())
+                {
+                    registryKey.Write(DisplayByFolderNameKey, value);
+                }
+            }
+        }
+
         public string DisplayByFolderFileNameKey = "DisplayByFolderFileNameKey";
         public bool DisplayByFolderFileName
         {

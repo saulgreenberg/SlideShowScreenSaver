@@ -27,6 +27,9 @@ namespace SlideShowScreenSaver
             this.RBFile.IsChecked = this.Settings.DisplayByFileName;
             this.RBFile.Checked += this.RBFileNaming_CheckChanged;
 
+            this.RBFolder.IsChecked = this.Settings.DisplayByFolderName;
+            this.RBFolder.Checked += this.RBFileNaming_CheckChanged;
+
             this.RBFolderFile.IsChecked = this.Settings.DisplayByFolderFileName;
             this.RBFolderFile.Checked += this.RBFileNaming_CheckChanged;
 
@@ -99,7 +102,6 @@ namespace SlideShowScreenSaver
             }
         }
 
-
         private void CBShowFileName_CheckChanged(object sender, RoutedEventArgs e)
         {
             this.Settings.ShowFileName = this.CBShowFileName.IsChecked == true;
@@ -114,16 +116,25 @@ namespace SlideShowScreenSaver
                 {
                     case "RBFile":
                         this.Settings.DisplayByFileName = true;
+                        this.Settings.DisplayByFolderName = false;
+                        this.Settings.DisplayByFolderFileName = false;
+                        this.Settings.DisplayByPath = false;
+                        break;
+                    case "RBFolder":
+                        this.Settings.DisplayByFileName = false;
+                        this.Settings.DisplayByFolderName = true;
                         this.Settings.DisplayByFolderFileName = false;
                         this.Settings.DisplayByPath = false;
                         break;
                     case "RBFolderFile":
                         this.Settings.DisplayByFileName = false;
+                        this.Settings.DisplayByFolderName = false;
                         this.Settings.DisplayByFolderFileName = true;
                         this.Settings.DisplayByPath = false;
                         break;
                     case "RBPath":
                         this.Settings.DisplayByFileName = false;
+                        this.Settings.DisplayByFolderName = false;
                         this.Settings.DisplayByFolderFileName = false;
                         this.Settings.DisplayByPath = true;
                         break;
