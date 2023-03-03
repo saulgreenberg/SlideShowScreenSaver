@@ -28,7 +28,11 @@ namespace SlideShowScreenSaver
         public readonly Settings Settings;
 
         // The timer that operates the slide show
-        private readonly DispatcherTimer Timer;
+        private readonly DispatcherTimer TimerChangeSlide;
+
+        private readonly bool IsPreviewMode;
+
+        private string CurrentSlidePath;
 
         // Transition effects
         // This eventually allows for more transition effects to be added
@@ -53,13 +57,13 @@ namespace SlideShowScreenSaver
         // Used to generate and select a random image from ImagePathsList 
         private readonly Random Random = new Random();
 
-        public MainWindow(Settings settings, bool previewing)
+        public MainWindow(Settings settings, bool isPreviewMode)
         {
             InitializeComponent();
             // This is a hack, as I can't figure out how to convert the size of the preview window into WPF coordinates
             //double pixelsToWpfRatio = .5;
             this.Settings = settings;
-
+            this.IsPreviewMode = isPreviewMode;
             // So we can access  this window from other objects
             MainWindow.MainWindowAccess = this;
 
@@ -71,47 +75,53 @@ namespace SlideShowScreenSaver
 
             // Load all images into the ImagePaths List
             this.ImagePathsList = this.LoadImageFolder(this.Settings.PhotoFolder);
-            if (!this.ImagePathsList.Any())
-            {
-                this.DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
-                return;
-            }
+
 
             // Set up the slide show timer
-            this.Timer = new DispatcherTimer
+            this.TimerChangeSlide = new DispatcherTimer
             {
                 Interval = new TimeSpan(0, 0, this.Settings.Timing)
             };
-            this.Timer.Tick += TimerTick;
+            this.TimerChangeSlide.Tick += TimerChangeSlide_Tick;
 
-            if (previewing)
+            if (this.IsPreviewMode)
             {
                 // We are in a preview mode.
+                // Note that the Loaded callback is not automatically invoked in Preview mode
                 // A screen saver preview is drawn in the small rectangle in the windows screen saver settings dialog
                 // Autosizing of images seems to work as long as its in a grid. 
                 // However, we should scale the font size to fit, and remove any margins from that text
                 this.DisplayText.FontSize = 8.0;
                 this.DisplayText.StrokeThickness = .2;
                 this.DisplayText.Margin = new Thickness(0);
-
-                this.MainWindow_Loaded(null, null);
-                // Note that the Loaded callback is not automatically invoked in Preview mode
+                this.InitializeSlideShow();
             }
             else
             {
                 // Set the outline font to the stored settings.
                 this.DisplayText.FontSize = this.Settings.DisplayFontSize;
-                this.DisplayText.StrokeThickness = this.DisplayText.FontSize/26.0;
+                this.DisplayText.StrokeThickness = this.DisplayText.FontSize / 26.0;
                 // The slide show will be started via the Loaded callback
+            }
+
+            if (!this.ImagePathsList.Any())
+            {
+                this.DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
             }
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // This is NOT invoked in preview mode
+            // Loaded is NOT explicitly invoked in preview mode
+            this.InitializeSlideShow();
+        }
+
+        private void InitializeSlideShow()
+        {
             // If there are no folders, then don't start the timer
             if (!this.ImagePathsList.Any())
             {
+                this.DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
                 this.Stop();
             }
             else
@@ -133,23 +143,23 @@ namespace SlideShowScreenSaver
                 .Where(file => file.EndsWith("jpg", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith("jpeg", StringComparison.InvariantCultureIgnoreCase));
         }
 
-        #region Slide sow playing: Start/Stop/IsPlaying/TogglePlay
+        #region Slide show playing: Start/Stop/IsPlaying/TogglePlay
         private bool IsPlaying()
         {
-            return this.Timer?.IsEnabled == true;
+            return this.TimerChangeSlide?.IsEnabled == true;
         }
-        
+
         private void Start()
         {
+            this.TimerChangeSlide.Start();
             this.ShowSlide();
-            this.Timer.Start();
         }
 
         private void Stop()
         {
             if (this.IsPlaying())
             {
-                this.Timer.Stop();
+                this.TimerChangeSlide.Stop();
             }
         }
 
@@ -157,11 +167,11 @@ namespace SlideShowScreenSaver
         {
             if (this.IsPlaying())
             {
-                this.Timer.Stop();
+                this.TimerChangeSlide.Stop();
             }
             else
             {
-                this.Timer.Start();
+                this.TimerChangeSlide.Start();
             }
         }
 
@@ -181,6 +191,14 @@ namespace SlideShowScreenSaver
 
         public void ShowSlide(bool fromHistoryList, DirectionEnum direction)
         {
+            if (!this.ImagePathsList.Any())
+            {
+                // No slides to show
+                this.DisplayText.Text = "No jpeg images found in: " + this.Settings.PhotoFolderKey;
+                this.Stop();
+                return;
+            }
+
             try
             {
                 // Switch the index so that:
@@ -188,19 +206,18 @@ namespace SlideShowScreenSaver
                 int historyListCount = this.HistoryList.Count;
 
                 // Swap the images
-                this.CurrentCtrlIndex = (this.CurrentCtrlIndex + 1) % 2; 
+                this.CurrentCtrlIndex = (this.CurrentCtrlIndex + 1) % 2;
                 Image imgOld = this.ImageControls[oldCtrlIndex];
                 Image imgNew = this.ImageControls[this.CurrentCtrlIndex];
 
                 ImageSource newSource;
-                string newPath;
 
                 if (fromHistoryList && direction == DirectionEnum.Next)
                 {
                     if (this.HistoryIndex + 1 >= this.HistoryList.Count)
                     {
                         // Because we are trying to go past the history list,
-                        // we generate a new slide instead.
+                        // we generate a new slide instead
                         fromHistoryList = false;
                     }
                     else
@@ -216,26 +233,26 @@ namespace SlideShowScreenSaver
                     }
                 }
 
-                if (fromHistoryList && this.HistoryIndex < historyListCount ) 
+                if (fromHistoryList && this.HistoryIndex < historyListCount)
                 {
-                    if (this.HistoryIndex < 0 || this.HistoryIndex >= historyListCount )
+                    if (this.HistoryIndex < 0 || this.HistoryIndex >= historyListCount)
                     {
                         // This shouldn't happen, but just in case
                         return;
                     }
                     // Get the next image path to display from the history list and assign it to the new image
-                    newPath = this.HistoryList[this.HistoryIndex];
-                    newSource = CreateImageSource(newPath, true);
+                    this.CurrentSlidePath = this.HistoryList[this.HistoryIndex];
+                    newSource = CreateImageSource(this.CurrentSlidePath, true);
                     imgNew.Source = newSource;
                 }
                 else
                 {
                     // Get a random image path to display
-                    newPath = this.ImagePathsList.ElementAt(Random.Next(0, this.ImagePathsList.Count()));
-                    newSource = CreateImageSource(newPath, true);
+                    this.CurrentSlidePath = this.ImagePathsList.ElementAt(Random.Next(0, this.ImagePathsList.Count()));
+                    newSource = CreateImageSource(this.CurrentSlidePath, true);
 
                     // Add the path to the history list
-                    this.HistoryList.Add(newPath);
+                    this.HistoryList.Add(this.CurrentSlidePath);
                     if (historyListCount == this.MaxHistoryItems)
                     {
                         this.HistoryList.RemoveAt(0);
@@ -248,7 +265,7 @@ namespace SlideShowScreenSaver
                 }
 
                 // Display the image name
-                this.DisplayText.Text = DisplayTextBasedOnSettings(this.Settings, newPath);
+                this.DisplayText.Text = DisplayTextBasedOnSettings(this.Settings, this.CurrentSlidePath, this.IsPlaying());
 
                 //  Set the image source to the new image
                 imgNew.Source = newSource;
@@ -269,7 +286,7 @@ namespace SlideShowScreenSaver
         #endregion
 
         #region UI Callbacks
-        private void TimerTick(object sender, EventArgs e)
+        private void TimerChangeSlide_Tick(object sender, EventArgs e)
         {
             this.ShowSlide();
         }
@@ -277,15 +294,24 @@ namespace SlideShowScreenSaver
         // Exit the screen saver on any mouse down press
         public void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (this.IsPreviewMode)
+            {
+                // The preview window in settings should not react to input done over it
+                return;
+            }
             Application.Current.Shutdown();
         }
 
-        // React to 
+        // React to a key press as specified below
         public void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (this.IsPreviewMode)
+            {
+                // The preview window in settings should not react to input done over it
+                return;
+            }
             switch (e.Key)
             {
-                
                 case Key.Space:
                     // Pause or resume the slide show
                     this.TogglePlay();
@@ -303,6 +329,8 @@ namespace SlideShowScreenSaver
                     Application.Current.Shutdown();
                     break;
             }
+            // Redisplay the image name to show the toggled pause state
+            this.DisplayText.Text = DisplayTextBasedOnSettings(this.Settings, this.CurrentSlidePath, this.IsPlaying());
         }
         #endregion
 
@@ -333,16 +361,18 @@ namespace SlideShowScreenSaver
 
         // Return a string representing the file name,
         // formatted according to the current user settings.
-        private static string DisplayTextBasedOnSettings(Settings settings, string path)
+        private static string DisplayTextBasedOnSettings(Settings settings, string path, bool isPlaying)
         {
+              string paused = isPlaying ? string.Empty : " (Paused)";
+
             if (settings.ShowFileName == false)
             {
-                return string.Empty;
+                return string.Empty + paused;
             }
 
             if (settings.DisplayByFileName)
             {
-                return Path.GetFileName(path);
+                return Path.GetFileName(path) + paused;
             }
 
             if (settings.DisplayByFolderName)
@@ -350,20 +380,22 @@ namespace SlideShowScreenSaver
                 string foldername = Path.GetFileName(Path.GetDirectoryName(path));
                 string filename = Path.GetFileName(path);
 
-                return foldername ?? filename;
+                return foldername != null
+                    ? foldername + paused
+                    : filename + paused;
             }
 
             if (settings.DisplayByFolderFileName)
             {
                 string foldername = Path.GetFileName(Path.GetDirectoryName(path));
                 string filename = Path.GetFileName(path);
-                
-                return foldername == null 
-                    ? filename 
-                    : Path.Combine(foldername, filename);
+
+                return foldername == null
+                    ? filename + paused
+                    : Path.Combine(foldername, filename) + paused;
             }
             // Only other possibilitys is settings.DisplayByPath 
-            return path;
+            return path + paused;
         }
         #endregion
     }

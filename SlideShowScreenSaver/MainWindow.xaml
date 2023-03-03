@@ -61,7 +61,7 @@
                         FontFamily="SegoeUI"
                         FontSize="26"
                         FontWeight="Bold"
-                        Text="This is a Test of Outline Text" />
+                        Text="" />
         </Label>
     </Grid>
 </Window>
