@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace SlideShowScreenSaver
 {
@@ -82,7 +83,7 @@ namespace SlideShowScreenSaver
         public static bool TryGetFolderFromUserUsingOpenFileDialog(string title, string initialFolder, out string selectedFolderPath)
         {
             selectedFolderPath = string.Empty;
-            using (CommonOpenFileDialog folderSelectionDialog = new CommonOpenFileDialog()
+            using CommonOpenFileDialog folderSelectionDialog = new CommonOpenFileDialog()
             {
                 Title = title,
                 DefaultDirectory = initialFolder,
@@ -90,16 +91,14 @@ namespace SlideShowScreenSaver
                 EnsurePathExists = false,
                 Multiselect = false
 
-            })
+            };
+            folderSelectionDialog.InitialDirectory = folderSelectionDialog.DefaultDirectory;
+            if (folderSelectionDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                folderSelectionDialog.InitialDirectory = folderSelectionDialog.DefaultDirectory;
-                if (folderSelectionDialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    selectedFolderPath = folderSelectionDialog.FileName;
-                    return true;
-                }
-                return false;
+                selectedFolderPath = folderSelectionDialog.FileName;
+                return true;
             }
+            return false;
         }
 
         private void CBShowFileName_CheckChanged(object sender, RoutedEventArgs e)

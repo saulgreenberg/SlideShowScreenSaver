@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Windows;
 using Microsoft.Win32;
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace SlideShowScreenSaver
 {
@@ -95,7 +96,7 @@ namespace SlideShowScreenSaver
                 return defaultValue;
             }
 
-            object value = registryKey.GetValue(subKeyPath);
+            object? value = registryKey.GetValue(subKeyPath);
             if (value == null)
             {
                 return defaultValue;
