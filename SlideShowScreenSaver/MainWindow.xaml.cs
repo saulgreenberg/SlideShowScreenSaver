@@ -12,6 +12,7 @@ using Application = System.Windows.Application;
 using Image = System.Windows.Controls.Image;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using Path = System.IO.Path;
+// ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
 namespace SlideShowScreenSaver
 {
@@ -46,7 +47,7 @@ namespace SlideShowScreenSaver
         private readonly IEnumerable<string> ImagePathsList;
 
         // A first-in list of previously seen photos
-        private readonly List<string> HistoryList = new List<string>();
+        private readonly List<string> HistoryList = new();
         private readonly int MaxHistoryItems = 50;
         private int HistoryIndex = -1;
 
@@ -55,7 +56,7 @@ namespace SlideShowScreenSaver
         private int CurrentCtrlIndex;
 
         // Used to generate and select a random image from ImagePathsList 
-        private readonly Random Random = new Random();
+        private readonly Random Random = new();
 
         public MainWindow(Settings settings, bool isPreviewMode)
         {
@@ -273,8 +274,8 @@ namespace SlideShowScreenSaver
                 // Get the Storyboard animations and apply it
                 // Out is a transition applied to the old image
                 // In is a transition applied to the new image
-                Storyboard StboardFadeOut = (Resources[$"{TransitionType}Out"] as Storyboard)?.Clone();
-                Storyboard StboardFadeIn = Resources[$"{TransitionType}In"] as Storyboard;
+                Storyboard? StboardFadeOut = (Resources[$"{TransitionType}Out"] as Storyboard)?.Clone();
+                Storyboard? StboardFadeIn = Resources[$"{TransitionType}In"] as Storyboard;
                 StboardFadeOut?.Begin(imgOld);
                 StboardFadeIn?.Begin(imgNew);
             }
@@ -377,7 +378,7 @@ namespace SlideShowScreenSaver
 
             if (settings.DisplayByFolderName)
             {
-                string foldername = Path.GetFileName(Path.GetDirectoryName(path));
+                string? foldername = Path.GetFileName(Path.GetDirectoryName(path));
                 string filename = Path.GetFileName(path);
 
                 return foldername != null
@@ -387,7 +388,7 @@ namespace SlideShowScreenSaver
 
             if (settings.DisplayByFolderFileName)
             {
-                string foldername = Path.GetFileName(Path.GetDirectoryName(path));
+                string? foldername = Path.GetFileName(Path.GetDirectoryName(path));
                 string filename = Path.GetFileName(path);
 
                 return foldername == null

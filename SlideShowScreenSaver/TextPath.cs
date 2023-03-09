@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
+// ReSharper disable NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 // This code is very slightly modified from the WPF Text Outline Font class by Clifford Nelson, found at https://www.codeproject.com/script/Articles/ViewDownloads.aspx?aid=1106695
 // Its not absolutely necessary for this screensaver. However, it does provide and outline text font that is more readable when placed above an image.

@@ -3,14 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace SlideShowScreenSaver
 {
-    //[Serializable, StructLayout(LayoutKind.Sequential)]
     public class Win32API
     {
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetClientRect(IntPtr hWnd, ref RECT lpRect);
     }
-    
+
     public struct RECT
     {
         public int Left;

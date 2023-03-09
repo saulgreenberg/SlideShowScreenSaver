@@ -18,17 +18,13 @@ namespace SlideShowScreenSaver
         {
             get
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    return registryKey.GetInteger(TimingKey, 3);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetInteger(TimingKey, 3);
             } 
             set
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    registryKey.Write(TimingKey, value);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(TimingKey, value);
             }
         }
         public string PhotoFolderKey = "PhotoFolder";
@@ -36,17 +32,13 @@ namespace SlideShowScreenSaver
         {
             get
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    return registryKey.GetString(PhotoFolderKey, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetString(PhotoFolderKey, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
             }
             set
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    registryKey.Write(PhotoFolderKey, value);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(PhotoFolderKey, value);
             }
         }
 
@@ -55,17 +47,13 @@ namespace SlideShowScreenSaver
         {
             get
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    return registryKey.GetBoolean(ShowFileNameKey,true);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetBoolean(ShowFileNameKey,true);
             }
             set
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    registryKey.Write(ShowFileNameKey, value);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(ShowFileNameKey, value);
             }
         }
 
@@ -74,17 +62,13 @@ namespace SlideShowScreenSaver
         {
             get
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    return registryKey.GetBoolean(DisplayByFileNameKey, true);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetBoolean(DisplayByFileNameKey, true);
             }
             set
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    registryKey.Write(DisplayByFileNameKey, value);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(DisplayByFileNameKey, value);
             }
         }
 
@@ -93,17 +77,13 @@ namespace SlideShowScreenSaver
         {
             get
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    return registryKey.GetBoolean(DisplayByFolderNameKey, true);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetBoolean(DisplayByFolderNameKey, true);
             }
             set
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    registryKey.Write(DisplayByFolderNameKey, value);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(DisplayByFolderNameKey, value);
             }
         }
 
@@ -112,17 +92,13 @@ namespace SlideShowScreenSaver
         {
             get
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    return registryKey.GetBoolean(DisplayByFolderFileNameKey, true);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetBoolean(DisplayByFolderFileNameKey, true);
             }
             set
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    registryKey.Write(DisplayByFolderFileNameKey, value);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(DisplayByFolderFileNameKey, value);
             }
         }
 
@@ -131,17 +107,13 @@ namespace SlideShowScreenSaver
         {
             get
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    return registryKey.GetBoolean(DisplayByPathKey, true);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetBoolean(DisplayByPathKey, true);
             }
             set
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    registryKey.Write(DisplayByPathKey, value);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(DisplayByPathKey, value);
             }
         }
 
@@ -150,17 +122,13 @@ namespace SlideShowScreenSaver
         {
             get
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    return registryKey.GetInteger(DisplayFontSizeKey, 26);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetInteger(DisplayFontSizeKey, 26);
             }
             set
             {
-                using (RegistryKey registryKey = this.OpenRegistryKey())
-                {
-                    registryKey.Write(DisplayFontSizeKey, value);
-                }
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(DisplayFontSizeKey, value);
             }
         }
         #endregion
@@ -183,10 +151,8 @@ namespace SlideShowScreenSaver
         /// </summary>
         public void ReadSettingsFromRegistry()
         {
-            using (RegistryKey registryKey = this.OpenRegistryKey())
-            {
-                this.Timing = registryKey.GetInteger(TimingKey, 3);
-            }
+            using RegistryKey registryKey = this.OpenRegistryKey();
+            this.Timing = registryKey.GetInteger(TimingKey, 3);
         }
 
         /// <summary>
@@ -196,10 +162,8 @@ namespace SlideShowScreenSaver
         /// <returns></returns>
         public bool IsRegistryKeyExists(string key)
         {
-            using (RegistryKey registryKey = this.OpenRegistryKey())
-            {
-                return !string.IsNullOrEmpty(registryKey.GetString(key, string.Empty));
-            }
+            using RegistryKey registryKey = this.OpenRegistryKey();
+            return !string.IsNullOrEmpty(registryKey.GetString(key, string.Empty));
         }
 
         /// <summary>
@@ -207,10 +171,8 @@ namespace SlideShowScreenSaver
         /// </summary>
         public string GetFromRegistry(string key)
         {
-            using (RegistryKey registryKey = this.OpenRegistryKey())
-            {
-                return registryKey.GetString(key, string.Empty);
-            }
+            using RegistryKey registryKey = this.OpenRegistryKey();
+            return registryKey.GetString(key, string.Empty);
         }
         #endregion
 
@@ -220,10 +182,8 @@ namespace SlideShowScreenSaver
         /// </summary>
         public void WriteSettingsToRegistry()
         {
-            using (RegistryKey registryKey = this.OpenRegistryKey())
-            {
-                registryKey.Write(TimingKey, this.Timing);
-            }
+            using RegistryKey registryKey = this.OpenRegistryKey();
+            registryKey.Write(TimingKey, this.Timing);
         }
 
         /// <summary>
@@ -233,35 +193,27 @@ namespace SlideShowScreenSaver
         /// <param name="value"></param>
         public void WriteToRegistry(string key, string value)
         {
-            using (RegistryKey registryKey = this.OpenRegistryKey())
-            {
-                registryKey.Write(key, value);
-            }
+            using RegistryKey registryKey = this.OpenRegistryKey();
+            registryKey.Write(key, value);
         }
 
         // ReSharper disable once UnusedMember.Global
         public void WriteToRegistry(string key, double value)
         {
-            using (RegistryKey registryKey = this.OpenRegistryKey())
-            {
-                registryKey.Write(key, value);
-            }
+            using RegistryKey registryKey = this.OpenRegistryKey();
+            registryKey.Write(key, value);
         }
 
         public void WriteToRegistry(string key, Rect value)
         {
-            using (RegistryKey registryKey = this.OpenRegistryKey())
-            {
-                registryKey.Write(key, value);
-            }
+            using RegistryKey registryKey = this.OpenRegistryKey();
+            registryKey.Write(key, value);
         }
 
         public void WriteToRegistry(string key, bool value)
         {
-            using (RegistryKey registryKey = this.OpenRegistryKey())
-            {
-                registryKey.Write(key, value);
-            }
+            using RegistryKey registryKey = this.OpenRegistryKey();
+            registryKey.Write(key, value);
         }
         #endregion
     }
