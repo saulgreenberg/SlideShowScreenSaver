@@ -14,6 +14,7 @@
 - Any other key or mouse press: exit the screen saver
 
 **Installation instructions**
+
 If you just want the executable, download and unzip SlideShowScreenSaver.zip, and start at step 4.
 
 1. Clone and build the program
@@ -27,6 +28,6 @@ If you just want the executable, download and unzip SlideShowScreenSaver.zip, an
      - Repeat Step 4, which should now work. 
 6. The Windows screensaver settings panel should appear. Adjust the settings to point to the folder (and sub-folders) containing your jpeg images.
 
-Programming notes.
+**Programming notes**
 - Uses C#,  WPF and built atop of .Net 6.0 using Visual Studio 2022.
 - Thanks to various others who provided online examples of how to code a screensaver. I used and modified bits of their code to create this screensaver.
