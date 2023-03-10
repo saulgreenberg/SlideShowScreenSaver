@@ -4,9 +4,9 @@
 - Photo transitions are by a cross dissolve 
 - Tested on a folder containing an extremely large number of images (> 10,000)
 - Settings options includes:
-     - choose the folder containg your desired images (default is your Pictures folder)
-     - choose the timing of switching between photos
-     - whether or not to show the image file name, and if so whether some or all of the path should be included.
+     - choose the folder containing your desired images (default is your Pictures folder)
+     - choose the length of time to display each image
+     - whether or not to show the image file / folder name, and if so whether some or all of the path should be included.
 
 **Shortcuts**
 - Spacebar: pause / resume the slide show
