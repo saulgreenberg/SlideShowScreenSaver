@@ -1,6 +1,6 @@
 **SlideShowScreenSaver Description**
-- This screensaver plays a slide show of jpeg images, randomly selected from a folder (and its sub-folders) of your choice,
-  where that folder is searched for all images on startup.
+=======
+- This screensaver plays a slide show of jpeg images, randomly selected from a folder (and its sub-folders) of your choice. That folder is searched for all images on startup.
 - Photo transitions are by a cross dissolve 
 - Tested on a folder containing an extremely large number of images (> 10,000)
 - Settings options includes:
@@ -10,16 +10,12 @@
 
 **Shortcuts**
 =======
-Others:
- - A paused slide show will resume after 1 minute
- 
-Shortcuts:
-- Spacebar: pause / resume the slide show
+- Spacebar: pause / resume the slide show (a paused show will auto-resume after 1 minute)
 - Left/Right arrow: pause the slide show and manualy navigate to the previous/next slide
 - Any other key or mouse press: exit the screen saver
 
 **Installation instructions**
-
+=======
 If you just want the executable, download and unzip SlideShowScreenSaver.zip, and start at step 4.
 
 1. Clone and build the program
@@ -34,5 +30,10 @@ If you just want the executable, download and unzip SlideShowScreenSaver.zip, an
 6. The Windows screensaver settings panel should appear. Adjust the settings to point to the folder (and sub-folders) containing your jpeg images.
 
 **Programming notes**
+=======
 - Uses C#,  WPF and built atop of .Net 6.0 using Visual Studio 2022.
 - Thanks to various others who provided online examples of how to code a screensaver. I used and modified bits of their code to create this screensaver.
+
+**Creator**
+=======
+Saul Greenberg
