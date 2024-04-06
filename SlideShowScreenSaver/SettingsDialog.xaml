@@ -1,0 +1,175 @@
+﻿<Window x:Class="SlideShowScreenSaver.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Loaded="Window_Loaded"
+        Title="Slide Show Screensaver settings"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        SizeToContent="WidthAndHeight">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+
+
+        <!--Select a folder-->
+        <TextBlock 
+            Grid.Row="0" Grid.Column="0"  FontWeight="Bold" Margin="0, 0,0,0" VerticalAlignment="Center">Photos folder</TextBlock>
+        <StackPanel 
+            Grid.Row="1" Grid.Column="0"  Orientation="Vertical" Margin="20, 0,5,10">
+            <TextBlock VerticalAlignment="Center">Select a folder containing image files</TextBlock>
+            <TextBlock Name="TextBlockCurrentPath" FontStyle="Italic" Margin="5,0,0,0" VerticalAlignment="Center"  ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
+        </StackPanel>
+        <Button 
+            Grid.Row="1" Grid.Column="1" Name="ButtonSelectFolder"  Content="Select folder"  Padding="5" Margin="10,0,10,0" VerticalContentAlignment="Center" Click="ButtonSelectFolder_OnClick"/>
+
+        <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,5,5"/>
+
+        <!--Select slide show timing-->
+        <StackPanel 
+            Grid.Row="3" Grid.Column="0" Orientation="Vertical" Margin="0, 0,0,10">
+            <TextBlock FontWeight="Bold">Slide show timing</TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="20, 2,5,10">
+                <TextBlock>Switch slide every</TextBlock>
+                <TextBlock Padding="5,0,5,0" TextAlignment="Right" Text="{Binding ElementName=SliderTiming,Path=Value}"/>
+                <TextBlock Padding="0,0,5,0"> seconds</TextBlock>
+            </StackPanel>
+        </StackPanel>
+
+
+        <Slider Name="SliderTiming" 
+                Grid.Row="3" Grid.Column="1" 
+                Width="150" Margin="0, 10,0,10" VerticalAlignment="Center"
+                Minimum="1" Maximum="10" Value="3"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"  
+        />
+
+        <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,5,5"/>
+
+        <!--File name display-->
+        <StackPanel 
+            Grid.Row="5" Grid.Column="0" Orientation="Vertical" Margin="0, 0,0,0">
+            <TextBlock FontWeight="Bold">Display image name</TextBlock>
+
+            <StackPanel 
+                Orientation="Vertical" Margin="0, 0,0,0">
+                <StackPanel Orientation="Horizontal" Margin="20, 2,5,0">
+                    <TextBlock>Set font size to</TextBlock>
+                    <TextBlock Padding="5,0,5,0" TextAlignment="Right" Text="{Binding ElementName=SliderDisplayFontSize,Path=Value}"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <!--Select Display font size-->
+        <Slider Name="SliderDisplayFontSize" 
+                Grid.Row="5" Grid.Column="1" 
+                Width="150" Margin="0, 0,0,0" VerticalAlignment="Bottom"
+                Minimum="18" Maximum="48" Value="26"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"  
+        />
+
+        <StackPanel
+            Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="20, 10,5,10">
+            <CheckBox Name="CBShowFileName" Content="Show the image's name as:"></CheckBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Vertical" Margin="10, 10,0,10" VerticalAlignment="Top">
+            <RadioButton Name="RBFile" Content="File name " GroupName="FileDisplay" Checked="RBFileNaming_CheckChanged"/>
+            <RadioButton Name="RBFolder" Content="Folder name " GroupName="FileDisplay"  Checked="RBFileNaming_CheckChanged"/>
+            <RadioButton Name="RBFolderFile" Content="Folder/file name" GroupName="FileDisplay"  Checked="RBFileNaming_CheckChanged"/>
+            <RadioButton Name="RBPath" Content="Full path" GroupName="FileDisplay" Checked="RBFileNaming_CheckChanged"/>
+        </StackPanel>
+
+
+
+
+
+        <Separator Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,5,5"/>
+
+        <!-- Documentation -->
+        <FlowDocumentScrollViewer Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Margin="-13,-10,0,0" Width="400" VerticalScrollBarVisibility="Hidden">
+            <FlowDocument FontFamily="SegoeUI" FontSize="12" >
+                <Paragraph Margin="0,0,0,0">
+                    <Bold>What it does</Bold>
+                </Paragraph>
+
+                <List Margin="0,0,0,0">
+                    <ListItem>
+                        <Paragraph>
+                            Plays a slide show of jpeg images, randomly selected from a folder and its sub-folders.
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            Photo transitions are by a cross dissolve
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            Works over large numbers of images (e.g., many thousands)
+                        </Paragraph>
+                    </ListItem>
+                </List>
+                <Paragraph Margin="0,5,0,0">
+                    <Bold>Shortcuts</Bold>
+                </Paragraph>
+                <List Margin="0,0,0,0">
+                    <ListItem>
+                        <Paragraph>
+                            <Bold>Spacebar:</Bold>
+                            Pause / resume the slide show
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph >
+                            <Bold>
+                                Left/Right arrow:
+                            </Bold>
+                            pause the slide show and manualy navigate to the previous/next slide
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            <Bold>
+                                Any other key or mouse press:
+                            </Bold>
+                            exit the screen saver
+                        </Paragraph>
+                    </ListItem>
+                </List>
+                <Paragraph FontSize="9" Margin="0,5,0,0">
+                    <Bold>
+                        ©Saul Greenberg, saul@ucalgary.ca 2022
+                    </Bold>
+                </Paragraph>
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
+
+        <!-- Accept or Cancel -->
+        <StackPanel 
+            Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Click="OkButton_Click" Margin="0,10,0,0" Padding="10" IsDefault="True" VerticalAlignment="Center">Done</Button>
+        </StackPanel>
+    </Grid>
+</Window>
