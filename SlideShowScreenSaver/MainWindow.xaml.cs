@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -60,6 +61,10 @@ namespace SlideShowScreenSaver
         // Used to generate and select a random image from ImagePathsList 
         private readonly Random Random = new();
 
+        // Duration left of when to resume the slide show after a pause
+        private static int resumePauseDuration = 60;
+        private static int pauseCountDown = 60;
+
         public MainWindow(Settings settings, bool isPreviewMode)
         {
             InitializeComponent();
@@ -89,7 +94,7 @@ namespace SlideShowScreenSaver
 
             this.TimerResumeAfterPause = new DispatcherTimer
             {
-                Interval = new TimeSpan(0, 0, 60)
+                Interval = new TimeSpan(0, 0, 2)
             };
             this.TimerResumeAfterPause.Tick += TimerResumeAfterPause_Tick;
 
@@ -160,6 +165,7 @@ namespace SlideShowScreenSaver
 
         private void Start()
         {
+            pauseCountDown = resumePauseDuration;
             TimerResumeAfterPause.Stop();
             this.TimerChangeSlide.Start();
             this.ShowSlide();
@@ -167,16 +173,18 @@ namespace SlideShowScreenSaver
 
         private void Stop()
         {
+            pauseCountDown = resumePauseDuration;
             if (this.IsPlaying())
             {
-                this.TimerChangeSlide.Stop();
+                 this.TimerChangeSlide.Stop();
+                // reset the resume pause duration, and start again.
                 TimerResumeAfterPause.Start();
             }
-
         }
 
         private void TogglePlay()
         {
+            pauseCountDown = resumePauseDuration;
             if (this.IsPlaying())
             {
                 this.Stop();
@@ -301,11 +309,20 @@ namespace SlideShowScreenSaver
         private void TimerChangeSlide_Tick(object? sender, EventArgs e)
         {
             this.ShowSlide();
+            this.DisplayText.Text = DisplayTextBasedOnSettings(this.Settings, this.CurrentSlidePath, this.IsPlaying());
         }
 
         private void TimerResumeAfterPause_Tick(object? sender, EventArgs e)
         {
-            this.Start();
+            if (pauseCountDown > 0)
+            {
+                pauseCountDown -= 2;
+            }
+            else
+            {
+                this.Start();
+            }
+            this.DisplayText.Text = DisplayTextBasedOnSettings(this.Settings, this.CurrentSlidePath, this.IsPlaying());
         }
 
         // Exit the screen saver on any mouse down press
@@ -376,11 +393,17 @@ namespace SlideShowScreenSaver
             }
         }
 
+
+        private static string GetPauseString()
+        {
+            return $" - paused {new string('.', pauseCountDown <= 0 ? 1 : pauseCountDown / 2) }";
+        }
+
         // Return a string representing the file name,
         // formatted according to the current user settings.
         private static string DisplayTextBasedOnSettings(Settings settings, string path, bool isPlaying)
         {
-              string paused = isPlaying ? string.Empty : " (Paused)";
+            string paused = isPlaying ? string.Empty : GetPauseString();
 
             if (settings.ShowFileName == false)
             {
