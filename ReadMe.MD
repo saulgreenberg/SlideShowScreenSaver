@@ -8,14 +8,12 @@
      - choose the length of time to display each image
      - whether or not to show the image file / folder name, and if so whether some or all of the path should be included.
 
-<<<<<<< HEAD
 **Shortcuts**
 =======
 Others:
  - A paused slide show will resume after 1 minute
  
 Shortcuts:
->>>>>>> 62a90dd (Modified to auto-resume in 1 minute after pausing)
 - Spacebar: pause / resume the slide show
 - Left/Right arrow: pause the slide show and manualy navigate to the previous/next slide
 - Any other key or mouse press: exit the screen saver
