@@ -179,11 +179,11 @@ namespace SlideShowScreenSaver
         {
             if (this.IsPlaying())
             {
-                this.TimerChangeSlide.Stop();
+                this.Stop();
             }
             else
             {
-                this.TimerChangeSlide.Start();
+                this.Start();
             }
         }
 
@@ -306,7 +306,6 @@ namespace SlideShowScreenSaver
         private void TimerResumeAfterPause_Tick(object? sender, EventArgs e)
         {
             this.Start();
-            TimerResumeAfterPause.Stop();
         }
 
         // Exit the screen saver on any mouse down press
