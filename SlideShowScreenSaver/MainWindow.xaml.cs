@@ -24,7 +24,7 @@ namespace SlideShowScreenSaver
     public partial class MainWindow
     {
         // So we can access this window directly from other objects
-        public static MainWindow MainWindowAccess;
+        public static MainWindow? MainWindowAccess;
 
         // These contain the settings (stored in the registry) along with defaults that can be adjusted in the Settings dialog 
         // invoked from the Windows screensaver settings.
@@ -36,7 +36,7 @@ namespace SlideShowScreenSaver
 
         private readonly bool IsPreviewMode;
 
-        private string CurrentSlidePath;
+        private string? CurrentSlidePath;
 
         // Transition effects
         // This eventually allows for more transition effects to be added
@@ -375,22 +375,43 @@ namespace SlideShowScreenSaver
         // catching the DownloadFailed event. See https://www.codeproject.com/Questions/785061/How-do-I-determine-an-Bitmapimage-loaded-successfu for how to do this.
         private static ImageSource CreateImageSource(string file, bool forcePreLoad)
         {
-            if (forcePreLoad)
+            using var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.IgnoreColorProfile, BitmapCacheOption.OnLoad);
+            var frame = decoder.Frames[0];
+            BitmapSource result = ApplyExifOrientation(frame);
+            result.Freeze();
+            return result;
+        }
+
+        private static BitmapSource ApplyExifOrientation(BitmapFrame frame)
+        {
+            const string orientationQuery = "/app1/ifd/{ushort=274}";
+            if (frame.Metadata is not BitmapMetadata metadata ||
+                !metadata.ContainsQuery(orientationQuery) ||
+                metadata.GetQuery(orientationQuery) is not ushort orientation ||
+                orientation <= 1)
             {
-                var src = new BitmapImage();
-                src.BeginInit();
-                src.UriSource = new Uri(file, UriKind.Absolute);
-                src.CacheOption = BitmapCacheOption.OnLoad;
-                src.EndInit();
-                src.Freeze();
-                return src;
+                return frame;
             }
-            else
+
+            return orientation switch
             {
-                var src = new BitmapImage(new Uri(file, UriKind.Absolute));
-                src.Freeze();
-                return src;
-            }
+                2 => new TransformedBitmap(frame, new ScaleTransform(-1, 1)),
+                3 => new TransformedBitmap(frame, new RotateTransform(180)),
+                4 => new TransformedBitmap(frame, new ScaleTransform(1, -1)),
+                5 => ChainTransforms(frame, new RotateTransform(90), new ScaleTransform(-1, 1)),
+                6 => new TransformedBitmap(frame, new RotateTransform(90)),
+                7 => ChainTransforms(frame, new RotateTransform(270), new ScaleTransform(-1, 1)),
+                8 => new TransformedBitmap(frame, new RotateTransform(270)),
+                _ => frame
+            };
+        }
+
+        private static TransformedBitmap ChainTransforms(BitmapSource src, Transform first, Transform second)
+        {
+            var step1 = new TransformedBitmap(src, first);
+            step1.Freeze();
+            return new TransformedBitmap(step1, second);
         }
 
 
