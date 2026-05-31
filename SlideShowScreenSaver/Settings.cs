@@ -131,6 +131,51 @@ namespace SlideShowScreenSaver
                 registryKey.Write(DisplayFontSizeKey, value);
             }
         }
+
+        public string IncludeVideosKey = "IncludeVideos";
+        public bool IncludeVideos
+        {
+            get
+            {
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetBoolean(IncludeVideosKey, true);
+            }
+            set
+            {
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(IncludeVideosKey, value);
+            }
+        }
+
+        public string ClipVideosKey = "ClipVideos";
+        public bool ClipVideos
+        {
+            get
+            {
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetBoolean(ClipVideosKey, true);
+            }
+            set
+            {
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(ClipVideosKey, value);
+            }
+        }
+
+        public string ClipDurationKey = "ClipDuration";
+        public int ClipDuration
+        {
+            get
+            {
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                return registryKey.GetInteger(ClipDurationKey, this.Timing);
+            }
+            set
+            {
+                using RegistryKey registryKey = this.OpenRegistryKey();
+                registryKey.Write(ClipDurationKey, value);
+            }
+        }
         #endregion
 
         #region Constructors

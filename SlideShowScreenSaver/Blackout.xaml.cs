@@ -44,14 +44,13 @@ namespace SlideShowScreenSaver
         // // Let the main window handle these events
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.MainWindowAccess.Window_MouseDown(sender, e);
+            MainWindow.MainWindowAccess?.Window_MouseDown(sender, e);
             Application.Current.Shutdown();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            
-            MainWindow.MainWindowAccess.Window_KeyDown(sender, e);
+            MainWindow.MainWindowAccess?.Window_KeyDown(sender, e);
         }
     }
 }

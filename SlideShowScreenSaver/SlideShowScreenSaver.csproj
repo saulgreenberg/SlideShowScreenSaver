@@ -1,20 +1,69 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <RollForward>LatestMajor</RollForward>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>1.0.0.2</Version>
-    <AssemblyVersion>1.0.0.2</AssemblyVersion>
-    <FileVersion>1.0.0.2</FileVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <Version>1.0.0.3</Version>
+    <AssemblyVersion>1.0.0.3</AssemblyVersion>
+    <FileVersion>1.0.0.3</FileVersion>
   </PropertyGroup>
 
+  <!-- Managed DLLs from the FFME ecosystem, stored locally so this project
+       is independent of the FFMEVideoPlayerControlLib source project. -->
+  <ItemGroup>
+    <Reference Include="FFMEVideoPlayerControlLib">
+      <HintPath>RequiredDlls\FFMEVideoPlayerControlLib.dll</HintPath>
+    </Reference>
+    <Reference Include="ffme.win">
+      <HintPath>RequiredDlls\ffme.win.dll</HintPath>
+    </Reference>
+    <Reference Include="FFmpeg.AutoGen">
+      <HintPath>RequiredDlls\FFmpeg.AutoGen.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- NuGet packages used directly by this project -->
   <ItemGroup>
     <PackageReference Include="Microsoft-Windows10-APICodePack-Shell" Version="1.1.8" />
     <PackageReference Include="WinCopies.WindowsAPICodePack" Version="2.12.0" />
+  </ItemGroup>
+
+  <!-- Native FFmpeg DLLs: copied to output only if newer (PreserveNewest) -->
+  <ItemGroup>
+    <Content Include="RequiredDlls\avcodec-62.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="RequiredDlls\avdevice-62.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="RequiredDlls\avfilter-11.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="RequiredDlls\avformat-62.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="RequiredDlls\avutil-60.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="RequiredDlls\swresample-6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="RequiredDlls\swscale-9.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

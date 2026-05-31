@@ -19,7 +19,7 @@ namespace SlideShowScreenSaver
 
     public class TextPath : Shape
     {
-        private Geometry _textGeometry;
+        private Geometry _textGeometry = Geometry.Empty;
 
         #region Dependency Properties
 

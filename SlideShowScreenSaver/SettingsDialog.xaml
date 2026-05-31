@@ -26,6 +26,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -36,7 +37,7 @@
             Grid.Row="0" Grid.Column="0"  FontWeight="Bold" Margin="0, 0,0,0" VerticalAlignment="Center">Photos folder</TextBlock>
         <StackPanel 
             Grid.Row="1" Grid.Column="0"  Orientation="Vertical" Margin="20, 0,5,10">
-            <TextBlock VerticalAlignment="Center">Select a folder containing image files</TextBlock>
+            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap">Select a folder containing image <LineBreak/>and/or video files</TextBlock>
             <TextBlock Name="TextBlockCurrentPath" FontStyle="Italic" Margin="5,0,0,0" VerticalAlignment="Center"  ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
         </StackPanel>
         <Button 
@@ -107,8 +108,30 @@
 
         <Separator Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,5,5"/>
 
+        <!-- Videos GroupBox -->
+        <GroupBox Header="Videos" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,5">
+            <StackPanel Margin="4,4">
+
+                <CheckBox Name="CBIncludeVideos" Content="Include videos in the slide show" />
+
+                <StackPanel Name="PanelClipDuration" Orientation="Horizontal" Margin="20,6,0,0">
+                    <CheckBox Name="CBClipVideos" VerticalAlignment="Center" Content="Play" Margin="0,0,6,0" /> 
+
+                    <Slider Name="SliderClipDuration"
+                            Minimum="3" Maximum="10"
+                            Width="120" Margin="8,0,0,0"
+                            IsSnapToTickEnabled="True" TickFrequency="1"
+                            VerticalAlignment="Center" />
+                    <TextBlock Padding="6,0,3,0" VerticalAlignment="Center"
+                               Text="{Binding ElementName=SliderClipDuration, Path=Value, StringFormat='{}{0:0}'}" />
+                    <TextBlock Text="seconds of the video" VerticalAlignment="Center" />
+                </StackPanel>
+
+            </StackPanel>
+        </GroupBox>
+
         <!-- Documentation -->
-        <FlowDocumentScrollViewer Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Margin="-13,-10,0,0" Width="400" VerticalScrollBarVisibility="Hidden">
+        <FlowDocumentScrollViewer Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Margin="-13,-10,0,0" Width="400" VerticalScrollBarVisibility="Hidden">
             <FlowDocument FontFamily="SegoeUI" FontSize="12" >
                 <Paragraph Margin="0,0,0,0">
                     <Bold>What it does</Bold>
@@ -117,7 +140,7 @@
                 <List Margin="0,0,0,0">
                     <ListItem>
                         <Paragraph>
-                            Plays a slide show of jpeg images, randomly selected from a folder and its sub-folders.
+                            Plays a slide show of image and video files, randomly selected from a folder and its sub-folders.
                         </Paragraph>
                     </ListItem>
                     <ListItem>
@@ -167,8 +190,8 @@
         </FlowDocumentScrollViewer>
 
         <!-- Accept or Cancel -->
-        <StackPanel 
-            Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel
+            Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Click="OkButton_Click" Margin="0,10,0,0" Padding="10" IsDefault="True" VerticalAlignment="Center">Done</Button>
         </StackPanel>
     </Grid>

@@ -38,12 +38,25 @@ namespace SlideShowScreenSaver
             this.RBPath.Checked += this.RBFileNaming_CheckChanged;
 
             this.SetRBVisibility(this.CBShowFileName.IsChecked == true);
+
+            this.CBIncludeVideos.IsChecked = this.Settings.IncludeVideos;
+            this.CBIncludeVideos.Checked   += CBVideoSettings_Changed;
+            this.CBIncludeVideos.Unchecked += CBVideoSettings_Changed;
+
+            this.CBClipVideos.IsChecked = this.Settings.ClipVideos;
+            this.CBClipVideos.Checked   += CBVideoSettings_Changed;
+            this.CBClipVideos.Unchecked += CBVideoSettings_Changed;
+
+            this.SliderClipDuration.Value = this.Settings.ClipDuration;
+
+            this.UpdateVideoControlsEnabled();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SliderTiming.ValueChanged += SliderTiming_ValueChanged;
             SliderDisplayFontSize.ValueChanged += SliderDisplayFontSize_ValueChanged;
+            SliderClipDuration.ValueChanged += SliderClipDuration_ValueChanged;
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
@@ -139,6 +152,27 @@ namespace SlideShowScreenSaver
                         break;
                 }
             }
+        }
+
+        private void SliderClipDuration_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (this.Settings != null)
+                this.Settings.ClipDuration = Convert.ToInt32(e.NewValue);
+        }
+
+        private void CBVideoSettings_Changed(object sender, RoutedEventArgs e)
+        {
+            this.Settings.IncludeVideos = this.CBIncludeVideos.IsChecked == true;
+            this.Settings.ClipVideos    = this.CBClipVideos.IsChecked    == true;
+            this.UpdateVideoControlsEnabled();
+        }
+
+        private void UpdateVideoControlsEnabled()
+        {
+            bool include = CBIncludeVideos.IsChecked == true;
+            bool clip    = CBClipVideos.IsChecked    == true;
+            CBClipVideos.IsEnabled       = include;
+            PanelClipDuration.IsEnabled  = include && clip;
         }
 
         private void SetRBVisibility(bool enabled)

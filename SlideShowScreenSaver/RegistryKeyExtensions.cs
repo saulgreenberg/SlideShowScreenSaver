@@ -182,7 +182,7 @@ namespace SlideShowScreenSaver
         {
             // Check the arguments for null 
             IsNullArgument(registryKey, nameof(registryKey));
-            return (string)registryKey.GetValue(subKeyPath);
+            return registryKey.GetValue(subKeyPath) as string ?? string.Empty;
         }
         #endregion
 

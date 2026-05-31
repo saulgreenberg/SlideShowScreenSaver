@@ -1,16 +1,20 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using Unosquare.FFME;
 
 namespace SlideShowScreenSaver
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App 
+    public partial class App
     {
         private void ApplicationStartup(object sender, System.Windows.StartupEventArgs e)
         {
+            // Must be set before any MediaElement is created (before windows open)
+            Library.FFmpegDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
             Settings settings = new Settings();
             if (e.Args.Length == 0 || e.Args[0].ToLower().StartsWith("/s"))
             {
