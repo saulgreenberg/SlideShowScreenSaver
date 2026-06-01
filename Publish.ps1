@@ -6,7 +6,7 @@
     2. Renames SlideShowScreenSaver.exe -> SlideShowScreenSaver.scr
     3. Signs the .scr via Sign.ps1 (SimplySign Desktop must be running and authenticated)
     4. Creates SlideShowScreenSaver-v<version>.zip at the solution root
-    5. Creates a GitHub Release and uploads the zip (requires gh CLI, authenticated)
+    5. Opens the GitHub Releases page so you can drag-and-drop the zip to publish
 
     Run from a PowerShell prompt at the solution root.
 #>
@@ -59,14 +59,19 @@ if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Compress-Archive -Path "$releaseDir\*" -DestinationPath $zipPath
 Write-Host "  -> $zipPath" -ForegroundColor Green
 
-# ── Step 5: Create GitHub Release ─────────────────────────────────────────────
+# ── Step 5: Open GitHub Releases page ─────────────────────────────────────────
 Write-Host ""
-Write-Host "[5/5] Creating GitHub Release v$version..." -ForegroundColor Yellow
+Write-Host "[5/5] Opening GitHub Releases page..." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "  Zip to upload : $zipPath" -ForegroundColor Cyan
+Write-Host "  Tag/Title     : v$version" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  1. Click 'Draft a new release'" -ForegroundColor White
+Write-Host "  2. Set tag to v$version" -ForegroundColor White
+Write-Host "  3. Drag and drop the zip above into the assets area" -ForegroundColor White
+Write-Host "  4. Click 'Publish release'" -ForegroundColor White
 
-$tag = "v$version"
-gh release create $tag $zipPath --title $tag --generate-notes
-
-if ($LASTEXITCODE -ne 0) { Write-Error "gh release create failed (exit $LASTEXITCODE). Make sure 'gh' is installed and authenticated." }
+Start-Process "https://github.com/saulgreenberg/SlideShowScreenSaver/releases/new"
 
 Write-Host ""
-Write-Host "=== Done: $zipName released as $tag ===" -ForegroundColor Green
+Write-Host "=== Done: $zipName is signed and ready to upload ===" -ForegroundColor Green
