@@ -6,7 +6,8 @@
     2. Renames SlideShowScreenSaver.exe -> SlideShowScreenSaver.scr
     3. Signs the .scr via Sign.ps1 (SimplySign Desktop must be running and authenticated)
     4. Creates SlideShowScreenSaver-v<version>.zip at the solution root
-    5. Opens the GitHub Releases page so you can drag-and-drop the zip to publish
+    5. Creates and pushes a git tag v<version>
+    6. Opens the GitHub Releases page so you can drag-and-drop the zip to publish
 
     Run from a PowerShell prompt at the solution root.
 #>
@@ -27,13 +28,13 @@ Write-Host "=== SlideShowScreenSaver v$version ===" -ForegroundColor Cyan
 
 # ── Step 1: Build ──────────────────────────────────────────────────────────────
 Write-Host ""
-Write-Host "[1/4] Building Release..." -ForegroundColor Yellow
+Write-Host "[1/6] Building Release..." -ForegroundColor Yellow
 dotnet publish $project -c Release -o "$releaseDir"
 if ($LASTEXITCODE -ne 0) { Write-Error "dotnet publish failed (exit $LASTEXITCODE)." }
 
 # ── Step 2: Rename .exe -> .scr ────────────────────────────────────────────────
 Write-Host ""
-Write-Host "[2/4] Renaming .exe -> .scr..." -ForegroundColor Yellow
+Write-Host "[2/6] Renaming .exe -> .scr..." -ForegroundColor Yellow
 
 $exePath = "$releaseDir\SlideShowScreenSaver.exe"
 $scrPath = "$releaseDir\SlideShowScreenSaver.scr"
@@ -45,12 +46,12 @@ Write-Host "  -> $scrPath"
 
 # ── Step 3: Sign ──────────────────────────────────────────────────────────────
 Write-Host ""
-Write-Host "[3/4] Signing (SimplySign Desktop must be running)..." -ForegroundColor Yellow
+Write-Host "[3/6] Signing (SimplySign Desktop must be running)..." -ForegroundColor Yellow
 & "$solutionRoot\Sign.ps1" -FilePath $scrPath
 
 # ── Step 4: Package zip ───────────────────────────────────────────────────────
 Write-Host ""
-Write-Host "[4/4] Packaging zip..." -ForegroundColor Yellow
+Write-Host "[4/6] Packaging zip..." -ForegroundColor Yellow
 
 $zipName = "SlideShowScreenSaver-v$version.zip"
 $zipPath = "$solutionRoot\$zipName"
@@ -59,9 +60,29 @@ if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Compress-Archive -Path "$releaseDir\*" -DestinationPath $zipPath
 Write-Host "  -> $zipPath" -ForegroundColor Green
 
-# ── Step 5: Open GitHub Releases page ─────────────────────────────────────────
+# ── Step 5: Tag and push ──────────────────────────────────────────────────────
 Write-Host ""
-Write-Host "[5/5] Opening GitHub Releases page..." -ForegroundColor Yellow
+Write-Host "[5/6] Tagging release..." -ForegroundColor Yellow
+
+$tag = "v$version"
+$remote = "SlideShowScreenSaver"
+
+$existingTag = git tag -l $tag
+if ($existingTag) {
+    Write-Host "  Tag $tag already exists, skipping." -ForegroundColor DarkYellow
+} else {
+    git tag $tag
+    if ($LASTEXITCODE -ne 0) { Write-Error "git tag failed." }
+    Write-Host "  Created tag $tag"
+}
+
+git push $remote $tag
+if ($LASTEXITCODE -ne 0) { Write-Error "git push tag failed." }
+Write-Host "  Pushed $tag to $remote" -ForegroundColor Green
+
+# ── Step 6: Open GitHub Releases page ─────────────────────────────────────────
+Write-Host ""
+Write-Host "[6/6] Opening GitHub Releases page..." -ForegroundColor Yellow
 Write-Host ""
 Write-Host "  Zip to upload : $zipPath" -ForegroundColor Cyan
 Write-Host "  Tag/Title     : v$version" -ForegroundColor Cyan
