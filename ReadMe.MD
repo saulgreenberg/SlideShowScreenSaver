@@ -17,22 +17,19 @@
 - Any other key or mouse press: exit the screen saver
 - When paused, video controls will appear atop a video allowing you to play and do other video operations.
 
-**Installation instructions**
+**Installation instructions **
 =======
-If you just want the executable, download and unzip SlideShowScreenSaver.zip, and start at step 4.
 
-1. Clone and build the program
-2. Go to the bin folder 
-3. Change the exe suffix: from SlideShowScreenSaver.exe to SlideShowScreenSaver.scr
-4. Right click on SlideShowScreenSaver.scr and choose install.
-5. If a dialog box appears that asks you to install .Net... (otherwise go to 6)
-  *.Net is the runtime platform used by SlideShowScreenSaver. It is a standard Microsoft product that you should only have to install once. * 
-     -  Download  the software from the Microsoft web site as instructed by clicking the button in the dialog box
-     -  Open the softwar, and follow the installation  instructions (should be very straight forward to do). 
-     - Repeat Step 4, which should now work. 
-6. The Windows screensaver settings panel should appear. Adjust the settings to point to the folder (and sub-folders) containing your jpeg images.
+1. Download the lastest release: 
+    a. Click **SlideShowScreenSaver (latest)** in the **Releases** area on the right panel of the Github window, 
+    b. Click the zip file **SlideShowScreenSaver-<version>.zip** 
+    c. Unzip it.
+2. Move the unzippped folder  to a location of your chosing. and open the  folder. You will see a large number of files - that is because we include Microsoft's .Net with the program to make it completely self-contained. 
+3. Find the file **SlideShowScreenSaver.scr**
+4. **Right click on SlideShowScreenSaver.scr** and choose **Install**.
+6. The Windows screensaver settings panel should appear. Adjust the settings to point to the folder (and sub-folders) containing your jpeg mages and video files.
 
-**Programming notes**
+**Programming notes if rebuilding from source**
 =======
 - Uses C#,  WPF and built atop of .Net using Visual Studio 2026.
 - To update RequiredDlls in future (e.g. when FFME or FFMEVideoPlayerControlLib is updated): rebuild FFMEVideoPlayerControlLib, then copy the new DLLs into RequiredDlls manually.
