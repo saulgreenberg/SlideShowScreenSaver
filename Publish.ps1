@@ -6,6 +6,7 @@
     2. Renames SlideShowScreenSaver.exe -> SlideShowScreenSaver.scr
     3. Signs the .scr via Sign.ps1 (SimplySign Desktop must be running and authenticated)
     4. Creates SlideShowScreenSaver-v<version>.zip at the solution root
+    5. Creates a GitHub Release and uploads the zip (requires gh CLI, authenticated)
 
     Run from a PowerShell prompt at the solution root.
 #>
@@ -58,5 +59,14 @@ if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Compress-Archive -Path "$releaseDir\*" -DestinationPath $zipPath
 Write-Host "  -> $zipPath" -ForegroundColor Green
 
+# ── Step 5: Create GitHub Release ─────────────────────────────────────────────
 Write-Host ""
-Write-Host "=== Done: $zipName ===" -ForegroundColor Green
+Write-Host "[5/5] Creating GitHub Release v$version..." -ForegroundColor Yellow
+
+$tag = "v$version"
+gh release create $tag $zipPath --title $tag --generate-notes
+
+if ($LASTEXITCODE -ne 0) { Write-Error "gh release create failed (exit $LASTEXITCODE). Make sure 'gh' is installed and authenticated." }
+
+Write-Host ""
+Write-Host "=== Done: $zipName released as $tag ===" -ForegroundColor Green
