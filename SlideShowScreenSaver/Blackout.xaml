@@ -7,6 +7,7 @@
         ShowInTaskbar="False"
         WindowStyle="None"
         MouseDown ="Window_MouseDown"
-        KeyDown ="Window_KeyDown">
+        KeyDown ="Window_KeyDown"
+        Cursor="None">
     <Grid/>
 </Window>

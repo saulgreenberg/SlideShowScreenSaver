@@ -12,7 +12,8 @@
         ShowInTaskbar="False"
         WindowState="Maximized"
         WindowStyle="None"
-        Loaded="MainWindow_Loaded">
+        Loaded="MainWindow_Loaded"
+        Cursor="None">
 
     <Window.Resources>
         <!-- The FadeIn / FadeOut animations -->
