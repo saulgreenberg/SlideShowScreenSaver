@@ -8,6 +8,9 @@ namespace SlideShowScreenSaver
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetClientRect(IntPtr hWnd, ref RECT lpRect);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetCursor(IntPtr hCursor);
     }
 
     public struct RECT

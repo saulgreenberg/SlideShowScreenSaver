@@ -27,6 +27,12 @@ namespace SlideShowScreenSaver
         private readonly DispatcherTimer TimerChangeSlide;
         private readonly DispatcherTimer TimerResumeAfterPause;
 
+        // The mouse cursor is hidden while the slide show runs. Moving the mouse shows it,
+        // and it is hidden again after this many seconds without movement.
+        private const int HideCursorAfterSeconds = 7;
+        private readonly DispatcherTimer TimerHideCursor;
+        private System.Drawing.Point LastCursorPosition;
+
         private readonly bool IsPreviewMode;
 
         private string? CurrentSlidePath;
@@ -36,6 +42,12 @@ namespace SlideShowScreenSaver
         private readonly string TransitionType;
 
         private List<string> MediaPathsList = new();
+
+        // The media list saved by the last completed scan, so the next slide show can start straight away.
+        // Its first line is the folder that was scanned; the remaining lines are the files found.
+        private static readonly string MediaListCachePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "SlideShowScreenSaver", "MediaList.txt");
 
         private readonly List<string> HistoryList = new();
         private readonly int MaxHistoryItems = 50;
@@ -93,10 +105,18 @@ namespace SlideShowScreenSaver
             };
             this.TimerResumeAfterPause.Tick += TimerResumeAfterPause_Tick;
 
+            this.TimerHideCursor = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(HideCursorAfterSeconds)
+            };
+            this.TimerHideCursor.Tick += (_, _) => HideCursor();
+
             if (this.IsPreviewMode)
             {
-                // Preview pane: small image-only set, load synchronously before showing.
-                this.MediaPathsList = LoadMediaFolder(this.Settings.PhotoFolder)
+                // Preview pane: image-only set, loaded synchronously before showing.
+                // Use the list saved by the last full scan if there is one, as scanning a large folder is slow.
+                List<string> cachedList = ReadMediaListCache(this.Settings.PhotoFolder);
+                this.MediaPathsList = (cachedList.Count > 0 ? cachedList : LoadMediaFolder(this.Settings.PhotoFolder))
                     .Where(p => !IsVideoFile(p)).ToList();
                 this.DisplayText.FontSize = 8.0;
                 this.DisplayText.StrokeThickness = .2;
@@ -107,6 +127,11 @@ namespace SlideShowScreenSaver
             {
                 this.DisplayText.FontSize = this.Settings.DisplayFontSize;
                 this.DisplayText.StrokeThickness = this.DisplayText.FontSize / 26.0;
+                this.LastCursorPosition = System.Windows.Forms.Cursor.Position;
+                HideCursor();
+                // Hide it again once the window is on screen: until then, Windows keeps showing the
+                // previous cursor until the mouse moves, and that move would then show it
+                this.ContentRendered += (_, _) => HideCursor();
             }
         }
 
@@ -125,16 +150,76 @@ namespace SlideShowScreenSaver
 
             this.DisplayText.Text = "Loading media…";
 
-            this.MediaPathsList = await Task.Run(() =>
-                Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
-                    .Where(f => f.EndsWith("jpg",  StringComparison.InvariantCultureIgnoreCase) ||
-                                f.EndsWith("jpeg", StringComparison.InvariantCultureIgnoreCase) ||
-                                IsVideoFile(f))
-                    .Where(f => includeVideos || !IsVideoFile(f))
-                    .ToList()
-            );
+            // Start straight away from the list saved by the last scan of this folder, if there is one.
+            // Files deleted since then are skipped when picked (see PickRandomExistingSlide).
+            List<string> cachedList = (await Task.Run(() => ReadMediaListCache(path)))
+                .Where(f => includeVideos || !IsVideoFile(f))
+                .ToList();
+            bool startedFromCache = cachedList.Count > 0;
+            if (startedFromCache)
+            {
+                this.MediaPathsList = cachedList;
+                this.InitializeSlideShow();
+            }
 
-            this.InitializeSlideShow();
+            // Scan the folder in the background, save the result for next time, and then use it,
+            // so files added since the last scan are included
+            List<string> scannedList;
+            try
+            {
+                scannedList = await Task.Run(() =>
+                {
+                    List<string> list = LoadMediaFolder(path).ToList();
+                    WriteMediaListCache(path, list);
+                    return list;
+                });
+            }
+            catch (Exception ex)
+            {
+                // Keep showing the saved list if the scan fails
+                if (!startedFromCache)
+                    this.DisplayText.Text = ex.Message;
+                return;
+            }
+
+            // This runs on the UI thread, so replacing the list can't clash with picking a slide from it
+            this.MediaPathsList = scannedList.Where(f => includeVideos || !IsVideoFile(f)).ToList();
+            if (!startedFromCache)
+                this.InitializeSlideShow();
+        }
+
+        private static List<string> ReadMediaListCache(string folder)
+        {
+            try
+            {
+                if (!File.Exists(MediaListCachePath))
+                    return new List<string>();
+                string[] lines = File.ReadAllLines(MediaListCachePath);
+                // Ignore a list saved for a different folder
+                if (lines.Length == 0 || !string.Equals(lines[0], folder, StringComparison.OrdinalIgnoreCase))
+                    return new List<string>();
+                return lines.Skip(1).Where(l => l.Length > 0).ToList();
+            }
+            catch
+            {
+                return new List<string>();
+            }
+        }
+
+        private static void WriteMediaListCache(string folder, List<string> mediaPaths)
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(MediaListCachePath)!);
+                // Write to a temporary file first, so a screensaver closed mid-write can't leave a partial list
+                string tempPath = MediaListCachePath + ".tmp";
+                File.WriteAllLines(tempPath, new[] { folder }.Concat(mediaPaths));
+                File.Move(tempPath, MediaListCachePath, true);
+            }
+            catch
+            {
+                // Not being able to save the list only means the next start waits for a full scan
+            }
         }
 
         private void InitializeSlideShow()
@@ -291,7 +376,14 @@ namespace SlideShowScreenSaver
                 }
                 else
                 {
-                    this.CurrentSlidePath = this.MediaPathsList[Random.Next(0, this.MediaPathsList.Count)];
+                    string? slidePath = PickRandomExistingSlide();
+                    if (slidePath == null)
+                    {
+                        this.DisplayText.Text = "No images or videos found in: " + this.Settings.PhotoFolderKey;
+                        this.Stop();
+                        return;
+                    }
+                    this.CurrentSlidePath = slidePath;
                     this.HistoryList.Add(this.CurrentSlidePath);
                     if (historyListCount == this.MaxHistoryItems)
                     {
@@ -364,6 +456,22 @@ namespace SlideShowScreenSaver
             {
                 this.DisplayText.Text = ex.Message;
             }
+        }
+
+        // The list may come from an earlier scan, so a file picked from it may since have been deleted or moved.
+        // Such files are dropped from the list and another is picked, until one that exists is found.
+        // Returns null if none of the files exist.
+        private string? PickRandomExistingSlide()
+        {
+            while (this.MediaPathsList.Count > 0)
+            {
+                int index = Random.Next(0, this.MediaPathsList.Count);
+                string candidate = this.MediaPathsList[index];
+                if (File.Exists(candidate))
+                    return candidate;
+                this.MediaPathsList.RemoveAt(index);
+            }
+            return null;
         }
 
         private void StartClipTimer()
@@ -513,6 +621,27 @@ namespace SlideShowScreenSaver
             this.DisplayText.Text = DisplayTextBasedOnSettings(this.Settings, this.CurrentSlidePath, !_isPaused);
         }
 
+        // Also called by the Blackout windows on the other screens
+        public void Window_MouseMove(object? sender, MouseEventArgs e)
+        {
+            if (this.IsPreviewMode) return;
+
+            // WPF also raises MouseMove when what is under a still mouse changes (e.g., a new slide appears),
+            // so only a change in the cursor's screen position counts as the mouse moving
+            System.Drawing.Point position = System.Windows.Forms.Cursor.Position;
+            if (position == this.LastCursorPosition) return;
+            this.LastCursorPosition = position;
+            ShowCursorUntilInactive();
+        }
+
+        // Shows the cursor, and hides it again after HideCursorAfterSeconds unless this is called again before then
+        private void ShowCursorUntilInactive()
+        {
+            ShowCursor();
+            this.TimerHideCursor.Stop();
+            this.TimerHideCursor.Start();
+        }
+
         public void Window_MouseDown(object? sender, MouseButtonEventArgs e)
         {
             if (this.IsPreviewMode) return;
@@ -534,6 +663,17 @@ namespace SlideShowScreenSaver
             {
                 case Key.Space:
                     TogglePlay();
+                    if (!_isPaused)
+                    {
+                        // Resumed: the slide show runs without a cursor
+                        this.TimerHideCursor.Stop();
+                        HideCursor();
+                    }
+                    else if (_videoIsActive)
+                    {
+                        // Paused on a video: show the cursor so its controls can be used
+                        ShowCursorUntilInactive();
+                    }
                     break;
                 case Key.Left:
                     Navigate(DirectionEnum.Previous);
@@ -554,6 +694,8 @@ namespace SlideShowScreenSaver
             if (_isClosing) return;
             e.Cancel = true;
             _isClosing = true;
+            this.TimerHideCursor.Stop();
+            ShowCursor();
             try { await VideoPlayer.Close(); } catch { }
             Application.Current.Shutdown();
         }
@@ -561,6 +703,17 @@ namespace SlideShowScreenSaver
         #endregion
 
         #region Utilities
+
+        // Mouse.OverrideCursor applies to all of this application's windows, including the Blackout windows
+        private static void HideCursor()
+        {
+            Mouse.OverrideCursor = Cursors.None;
+            // OverrideCursor only takes effect when Windows next asks for the cursor, usually when the mouse moves,
+            // so also remove the cursor now
+            Win32API.SetCursor(IntPtr.Zero);
+        }
+
+        private static void ShowCursor() => Mouse.OverrideCursor = null;
 
         private static ImageSource CreateImageSource(string file, bool forcePreLoad)
         {

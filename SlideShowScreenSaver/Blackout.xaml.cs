@@ -48,6 +48,11 @@ namespace SlideShowScreenSaver
             Application.Current.Shutdown();
         }
 
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+            MainWindow.MainWindowAccess?.Window_MouseMove(sender, e);
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             MainWindow.MainWindowAccess?.Window_KeyDown(sender, e);
